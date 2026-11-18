@@ -41,8 +41,7 @@ button{font-family:inherit;cursor:pointer}
 .vs{font-size:12px;color:#a9a3e0;font-weight:600}
 .tabs{display:flex;flex-direction:column;gap:6px;padding:10px;border-bottom:1px solid var(--line);background:#fff}
 .trow{display:flex;flex-wrap:wrap;gap:6px}
-.trow:first-child button{flex:1}
-.trow:nth-child(2) button{flex:1}
+.trow.top{padding-bottom:6px;border-bottom:1px dashed var(--line)}
 .tabs button.mine{background:#fff3c4;color:#5a4300;border:1px solid #f0d77a}
 .tabs button.mine.on{background:#f5c400;color:#1b1446;border-color:#f5c400}
 .tabs button{border:0;background:var(--odds);padding:7px 11px;border-radius:16px;font-weight:600;font-size:12px;color:var(--ink);white-space:nowrap}
@@ -218,10 +217,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="983348bad7">
+<meta name="wb-version" content="6b92cfc29d">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='983348bad7',busy=false;
+(function(){var mine='6b92cfc29d',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -372,8 +371,8 @@ const TABS=[['popular','Popular'],['hot','🔥 Hot Legs'],['value','💎 Value P
 function renderTabs(){
   const open = state.bets.filter(b=>b.status==='open').length;
   const L=Object.fromEntries(TABS), b=(k,cls='')=>`<button data-tab="${k}" class="${cls} ${state.tab===k?'on':''}">${L[k]}${k==='mybets'&&open?`<span class="badge">${open}</span>`:''}</button>`;
-  const rows=[['mybets','results'],['form','opp'],TABS.map(x=>x[0]).filter(k=>!['mybets','results','form','opp'].includes(k))];
-  $('#tabs').innerHTML = `<div class="trow">${rows[0].map(k=>b(k,'mine')).join('')}</div><div class="trow">${rows[1].map(k=>b(k)).join('')}</div><div class="trow">${rows[2].map(k=>b(k)).join('')}</div>`;
+  const rest=TABS.map(x=>x[0]).filter(k=>!['mybets','results','form','opp'].includes(k));
+  $('#tabs').innerHTML = `<div class="trow top">${b('mybets','mine')}${b('results','mine')}${b('form')}${b('opp')}</div><div class="trow">${rest.map(k=>b(k)).join('')}</div>`;
 }
 const isSel = id=>state.slip.includes(id);
 function obtn(s){return `<button class="ob ${isSel(s.id)?'sel':''}" data-sel="${s.id}"><span class="l">${s.btn||s.label}</span><span class="o">${fo(s.odds)}</span></button>`}
