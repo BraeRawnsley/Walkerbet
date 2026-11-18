@@ -140,6 +140,18 @@ th,td{padding:6px 4px}
 .sumgrid div{background:#fafbfd;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center}
 .sumgrid b{display:block;font-family:'Barlow Condensed';font-size:20px}
 .sumgrid small{font-size:10px;color:var(--muted)}
+.sumgrid.sm{grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:2px}
+.sumgrid.sm div{padding:5px 2px;border-radius:6px}
+.sumgrid.sm b{font-size:13px}
+.sumgrid.sm small{font-size:9px}
+.rbet{padding:14px 14px;font-size:15px}
+.rbet .top2{font-size:13.5px}
+.rbet .lg{font-size:15px;padding:4px 0}
+.rbet .lg b{font-size:15px}
+.rfoot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.pill.big{font-size:14px;padding:3px 9px}
+.rmoney{font-family:'Barlow Condensed';font-weight:800;font-size:24px;color:var(--win)}
+.rmoney.neg{color:var(--loss);font-size:18px}
 .rhead{font-weight:700;font-size:13px;margin:12px 0 6px;display:flex;justify-content:space-between}
 .pill{display:inline-block;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700}
 .pw{background:#e3f7ec;color:var(--win)} .pl{background:#fde7e7;color:var(--loss)} .po{background:#eef0f5;color:var(--muted)}
@@ -234,10 +246,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="8d81c3f45c">
+<meta name="wb-version" content="5239ab01e2">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='8d81c3f45c',busy=false;
+(function(){var mine='5239ab01e2',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -543,14 +555,21 @@ function betCard(b){
   return `<div class="bet">${bigWin(b)?`<button class="bwshare" data-share="${b.id}">🎉 Big win! Share it with the boys</button>`:`<button class="sharesm" data-share="${b.id}">📤 Share bet</button>`}<div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span>${pill}</div>${b.scRefund?`<div class="note sc">Lost by one leg — ${fmt(b.scRefund)} (25% of stake) paid back by Second Chance</div>`:''}${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}</div>`;}
 function resultsTab(){
   if(!HIST.length) return mkt('Results','','<div class="empty">No settled bets yet. Bets land here once the result is added (Thursday ~11:30pm) and stay here week to week.</div>');
-  const st=HIST.reduce((a,b)=>a+b.stake,0), ret=HIST.reduce((a,b)=>a+(b.status==='won'?b.stake*b.odds:b.status==='void'?b.stake:0)+(b.scRefund||0),0), w=HIST.filter(b=>b.status==='won').length, dec=HIST.filter(b=>b.status!=='void').length||1;
-  const best=HIST.filter(b=>b.status==='won').sort((a,b)=>b.stake*b.odds-a.stake*a.odds)[0];
-  const sum=`<div class="sumgrid"><div><b>${HIST.length}</b><small>Bets</small></div><div><b>${w}</b><small>Won</small></div><div><b>${Math.round(w/dec*100)}%</b><small>Strike rate</small></div>
-    <div><b>${fmt(st)}</b><small>Staked</small></div><div><b>${fmt(ret)}</b><small>Returned</small></div><div><b style="color:${ret-st>=0?'var(--win)':'var(--loss)'}">${ret-st>=0?'+':'−'}${fmt(Math.abs(ret-st))}</b><small>Profit</small></div></div>
-    ${best?`<div class="note">🏆 Best collect: ${fmt(best.stake*best.odds)} on a ${best.type.toLowerCase()} (${best.round})</div>`:''}`;
+  const R=HIST.filter(b=>b.status!=='void');                       // voided bets don't count toward the record
+  const back=b=>(b.status==='won'?b.stake*b.odds:0)+(b.scRefund||0);
+  const st=R.reduce((a,b)=>a+b.stake,0), ret=R.reduce((a,b)=>a+back(b),0), w=R.filter(b=>b.status==='won').length, dec=R.length||1, pr=ret-st;
+  const best=R.filter(b=>b.status==='won').sort((a,b)=>b.stake*b.odds-a.stake*a.odds)[0];
+  const sum=`<div class="sumgrid sm"><div><b>${R.length}</b><small>Bets</small></div><div><b>${w}</b><small>Won</small></div><div><b>${Math.round(w/dec*100)}%</b><small>Strike</small></div>
+    <div><b>${fmt(st)}</b><small>Staked</small></div><div><b>${fmt(ret)}</b><small>Returned</small></div><div><b style="color:${pr>=0?'var(--win)':'var(--loss)'}">${pr>=0?'+':'−'}${fmt(Math.abs(pr))}</b><small>Profit</small></div></div>
+    ${best?`<div class="note" style="padding:4px 0 0">🏆 Best collect: ${fmt(best.stake*best.odds)} (${best.round})</div>`:''}`;
   const rounds=[...new Set(HIST.map(b=>b.round))].reverse();
-  const list=rounds.map(r=>{const bs=HIST.filter(b=>b.round===r);const p=bs.reduce((a,b)=>a+(b.status==='won'?b.stake*b.odds:b.status==='void'?b.stake:0)+(b.scRefund||0)-b.stake,0);
-    return `<div class="rhead"><span>${r}</span><span style="color:${p>=0?'var(--win)':'var(--loss)'}">${p>=0?'+':'−'}${fmt(Math.abs(p))}</span></div>`+bs.slice().reverse().map(betCard).join('')}).join('');
+  const card=b=>{const pill=b.status==='won'?`<span class="pill pw big">WON ${fmt(b.stake*b.odds)}</span>`:b.status==='void'?`<span class="pill po">VOID${b.voidNote?' ('+b.voidNote.toUpperCase()+')':''}</span>`:b.scRefund?`<span class="pill psc big">🔁 SECOND CHANCE +${fmt(b.scRefund)}</span>`:'<span class="pill pl">LOST</span>';
+    return `<div class="bet rbet">${bigWin(b)?`<button class="bwshare" data-share="${b.id}">🎉 Big win! Share it with the boys</button>`:`<button class="sharesm" data-share="${b.id}">📤 Share bet</button>`}
+      <div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span></div>
+      ${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}
+      <div class="rfoot">${pill}${b.status==='void'?'':(n=>n>=0?`<span class="rmoney">+${fmt(n)}</span>`:`<span class="rmoney neg">−${fmt(-n)}</span>`)(back(b)-b.stake)}</div></div>`;};
+  const list=rounds.map(r=>{const bs=HIST.filter(b=>b.round===r), p=bs.filter(b=>b.status!=='void').reduce((a,b)=>a+back(b)-b.stake,0);
+    return `<div class="rhead"><span>${r}</span><span style="color:${p>=0?'var(--win)':'var(--loss)'}">${p>=0?'+':'−'}${fmt(Math.abs(p))}</span></div>`+bs.slice().reverse().map(card).join('')}).join('');
   return mkt('Your record','All weeks',sum)+mkt('Previous bets','Newest first',list)+`<div style="text-align:center;margin:10px 0"><button class="btn alt" id="clearHist">Clear history</button></div>`;
 }
 function renderMarkets(){
