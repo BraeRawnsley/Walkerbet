@@ -457,7 +457,7 @@ function renderSlip(){
    <div class="stake"><input type="number" min="0" step="1" placeholder="Stake" data-stake="${id}" value="${stakes[id]||''}"><div class="ret">Return<b>${fmt((stakes[id]||0)*s.odds)}</b></div></div></div>`}).join('');
   if(state.slip.length>1){
     const g=sgm(), ok=g.ok;
-    h += `<div class="leg multi"><div class="r1"><div style="flex:1"><div class="sn">${state.slip.length}-Leg Same Game Multi</div><div class="mk">${ok?`All legs must win · normal multi <s>${fo(g.straight)}</s> · SGM adjusted −${Math.round(g.cut*100)}%`:g.why}</div></div><span class="od">${ok?fo(g.price):'—'}</span></div>
+    h += `<div class="leg multi"><div class="r1"><div style="flex:1"><div class="sn">${state.slip.length}-Leg Same Game Multi</div><div class="mk">${ok?'All legs must win':g.why}</div></div><span class="od">${ok?fo(g.price):'—'}</span></div>
     ${ok?`<div class="stake"><input type="number" min="0" step="1" placeholder="Stake" data-stake="multi" value="${stakes.multi||''}"><div class="ret">Return<b>${fmt((stakes.multi||0)*multiOdds())}</b></div></div><div class="quick">${[1,2,5,10].map(v=>`<button data-q="${v}">+$${v}</button>`).join('')}</div>`:''}</div>`;
   }
   $('#sbody').innerHTML=h;
