@@ -177,28 +177,25 @@ th,td{padding:6px 4px}
 .wrap{max-width:480px;grid-template-columns:1fr;padding:10px 10px 90px}
 
 .ehead{padding:18px 14px 16px}
-.avbox{margin-top:12px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.2);border-radius:12px;padding:10px 11px}
-.avt{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.avt b{font-size:13px;font-weight:800;letter-spacing:.3px}
-.avt small{font-size:11px;color:#cfcaf7;white-space:nowrap}
-.avme{display:flex;gap:8px;align-items:center;margin:8px 0 7px;font-size:12.5px;color:#cfcaf7}
-.avme select{flex:1;font-size:16px;padding:7px 8px;border:0;border-radius:8px;font-family:inherit;background:#fff;color:var(--ink)}
+.avbox{display:flex;width:100%;align-items:center;gap:10px;margin-top:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;border-radius:12px;padding:9px 11px;text-align:left;font-family:Inter}
+.avbox.on{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
+.avt2{flex:1;min-width:0}.avt2 b{display:block;font-size:13.5px;font-weight:800}.avt2 small{display:block;font-size:11px;opacity:.8;margin-top:1px}
+.avc{font-size:11px;font-weight:700;white-space:nowrap;opacity:.9}
+.avme{display:flex;gap:8px;align-items:center;margin:0 0 8px;font-size:13px;color:var(--muted)}
+.avme select{flex:1;font-size:16px;padding:8px;border:1px solid var(--line);border-radius:8px;font-family:inherit;background:#fff;color:var(--ink)}
 .avbt{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.avbt button{border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;border-radius:10px;padding:9px 2px;font-size:12.5px;font-weight:800;font-family:Inter}
-.avbt button.av.on{background:#1fbf75;border-color:#1fbf75}
-.avbt button.un.on{background:#e04848;border-color:#e04848}
+.avbt button{border:1.5px solid var(--line);background:#fafbfd;color:var(--ink);border-radius:12px;padding:12px 2px;font-size:13px;font-weight:800;font-family:Inter}
+.avbt button.av.on{background:#1fbf75;border-color:#1fbf75;color:#fff}
+.avbt button.un.on{background:#e04848;border-color:#e04848;color:#fff}
 .avbt button.co.on{background:#f5c400;border-color:#f5c400;color:#1b1446}
 .avbt button:disabled{opacity:.45}
-.avsum{display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px;color:#e6e3ff;margin-top:8px}
-.avsum span b{font-weight:800}
-.avtog{width:100%;margin-top:7px;border:0;border-top:1px dashed rgba(255,255,255,.25);background:none;color:var(--acc);font-weight:700;font-size:12px;padding:7px 0 0}
-.avl{margin-top:6px}
-.avr{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 0;border-top:1px solid rgba(255,255,255,.12)}
+.avsum{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:6px}
+.avsum b{color:var(--ink)}
+.avr{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;padding:8px 0;border-top:1px solid var(--line)}
 .avr:first-child{border-top:0}
-.avr small{color:#cfcaf7;font-size:11px;margin-left:4px}
-.avp{font-size:11px;font-weight:800;border-radius:5px;padding:2px 7px}
-.avp.available{background:#1fbf75;color:#fff}.avp.unavailable{background:#e04848;color:#fff}.avp.coaching{background:#f5c400;color:#1b1446}.avp.none{background:rgba(255,255,255,.14);color:#cfcaf7}
-.avnote{font-size:11px;color:#cfcaf7;margin-top:6px}
+.avr small{color:var(--muted);font-size:11px;margin-left:4px}
+.avp{font-size:11px;font-weight:800;border-radius:5px;padding:2px 8px}
+.avp.available{background:#1fbf75;color:#fff}.avp.unavailable{background:#e04848;color:#fff}.avp.coaching{background:#f5c400;color:#1b1446}.avp.none{background:#eef0f5;color:var(--muted)}
 .hq{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
 .hq button,.hq a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;padding:8px 4px;
   border-radius:14px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.1);color:#fff;text-decoration:none;
@@ -300,10 +297,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="f6c98feb6b">
+<meta name="wb-version" content="373bf3b0e3">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='f6c98feb6b',busy=false;
+(function(){var mine='373bf3b0e3',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -334,7 +331,7 @@ document.addEventListener('visibilitychange',function(){if(document.visibilitySt
         <div class="vs">VS</div>
         <div class="team"><span id="hOpp"></span><small id="hOp"></small></div>
       </div>
-      <div class="avbox" id="avbox"></div>
+      <button class="avbox" data-tab="avail" id="avbox"></button>
       <div class="emeta" style="margin-top:8px"><span id="hLast"></span></div>
       <div class="hq" id="hq">
         <button data-tab="ladder"><span class="ic">🏆</span>League Ladder</button>
@@ -635,7 +632,7 @@ function resultsTab(){
    back from the form's published responses CSV (Google refreshes that every few minutes). ---------- */
 const AVF=DATA.avail_form||null, AV_URL=AVF?AVF.csv:'', AV_ROUND='R'+DATA.header.round;
 const AV_NAMES=DATA.players.map(p=>p.name).sort();
-const AV_OPT=[['available','✅ Available','av'],['unavailable','❌ Unavailable','un'],['coaching','📋 Coaching','co']];
+const AV_OPT=[['available','✅ Available','av'],['unavailable','❌ Unavailable','un'],['coaching','Coaching','co']];
 const AV_LBL={available:'Available',unavailable:'Unavailable',coaching:'Coaching',none:'Not answered'};
 let AV={rows:null,err:false,busy:false,open:false};
 let AV_ME=(()=>{try{return localStorage.getItem('walkerbet_me')||''}catch(e){return ''}})();
@@ -651,27 +648,38 @@ function avLoad(){ if(!AV_URL){avPaint();return}
     const last={}; rows.forEach(r=>{if((r[ri]||'').trim()===AV_ROUND&&r[ni]){last[r[ni].trim()]={round:AV_ROUND,name:r[ni].trim(),status:(r[si]||'').trim().toLowerCase()}}});
     const mine=avMine(); Object.entries(mine).forEach(([n,s])=>{last[n]={round:AV_ROUND,name:n,status:s}}); // this phone's own answers show straight away
     AV.rows=Object.values(last).filter(r=>AV_LBL[r.status]); AV.err=false; avPaint();}).catch(()=>{AV.err=true;avPaint()});}
-function avSet(status){ if(!AV_ME||AV.busy||!AV_URL) return; AV.busy=true;
-  const prev=AV.rows||[]; AV.rows=[...prev.filter(r=>r.name!==AV_ME),{round:AV_ROUND,name:AV_ME,status}]; avPaint();
+function avSet(pick){ if(!AV_ME||AV.busy||!AV_URL) return; AV.busy=true;
+  const status=avStatus(AV_ME)===pick?'':pick;                 // tap your current answer again = undo
+  const prev=AV.rows||[]; AV.rows=[...prev.filter(r=>r.name!==AV_ME),...(status?[{round:AV_ROUND,name:AV_ME,status}]:[])]; avPaint();
   const body=new URLSearchParams(); body.append(AVF.round,AV_ROUND); body.append(AVF.name,AV_ME); body.append(AVF.status,status);
   fetch(AVF.post,{method:'POST',mode:'no-cors',body})
     .then(()=>{const m=avMine();m[AV_ME]=status;try{localStorage.setItem('walkerbet_avail_'+AV_ROUND,JSON.stringify(m))}catch(e){}
-      AV.busy=false;toast('Saved — you’re marked '+AV_LBL[status]);avPaint()})
+      AV.busy=false;toast(status?'Saved — you’re marked '+AV_LBL[status]+' (tap again to undo)':'Answer removed');avPaint()})
     .catch(()=>{AV.rows=prev;AV.busy=false;toast("Couldn't save — check your connection");avPaint()});}
 function avStatus(n){const r=(AV.rows||[]).find(x=>x.name===n);return r&&r.status?r.status:'none'}
-function avPaint(){const el=document.getElementById('avbox'); if(!el) return;
-  const title=`<div class="avt"><b>🙋 MY AVAILABILITY</b><small>Round ${DATA.header.round} · ${DATA.header.date}</small></div>`;
-  if(!AV_URL){el.innerHTML=title+'<div class="avnote">Availability is being set up — check back soon.</div>';return}
-  const mine=AV_ME?avStatus(AV_ME):'none', dis=!AV_ME||!AV.rows;
-  const c={available:0,unavailable:0,coaching:0,none:0}; AV_NAMES.forEach(n=>c[avStatus(n)]++);
+function avCounts(){const c={available:0,unavailable:0,coaching:0,none:0}; AV_NAMES.forEach(n=>c[avStatus(n)]++); return c}
+function avPaint(){const el=document.getElementById('avbox'); if(!el) return;   // slim entry on the homepage
+  const c=avCounts(), mine=AV_ME?avStatus(AV_ME):'none';
+  const sub=!AV_URL?'Coming soon':!AV.rows?(AV.err?'Tap to open':'Loading…'):
+    (AV_ME?(mine==='none'?'You haven’t answered yet':'You: '+AV_LBL[mine])+' · ':'')+`${c.available} available`;
+  el.innerHTML=`<div class="avt2"><b>My Availability</b><small>Let the team know if you’re playing Round ${DATA.header.round}</small></div><span class="avc">${sub} ›</span>`;
+  el.classList.toggle('on',state.tab==='avail');
+  if(state.tab==='avail'){const m=document.getElementById('markets'); if(m) m.innerHTML=availTab();}}
+function availTab(){
+  const head=`Round ${DATA.header.round} v ${OPPT} · ${DATA.header.date} · ${DATA.header.time}`;
+  if(!AV_URL) return mkt('My Availability','',`<div class="note">${head}</div><div class="empty">Availability is being set up — check back soon.</div>`);
+  const mine=AV_ME?avStatus(AV_ME):'none', dis=!AV_ME||!AV.rows, c=avCounts();
   const order={available:0,coaching:1,unavailable:2,none:3};
   const list=[...AV_NAMES].sort((a,b)=>order[avStatus(a)]-order[avStatus(b)]||a.localeCompare(b));
-  el.innerHTML=title+`<div class="avme"><span>I'm</span><select id="avMe"><option value="">— pick your name —</option>${AV_NAMES.map(n=>`<option ${n===AV_ME?'selected':''}>${n}</option>`).join('')}</select></div>
-    <div class="avbt">${AV_OPT.map(([k,l,cl])=>`<button class="${cl} ${mine===k?'on':''}" data-av="${k}" ${dis?'disabled':''}>${l}</button>`).join('')}</div>
-    ${AV.rows?`<div class="avsum"><span>✅ <b>${c.available}</b> available</span><span>❌ <b>${c.unavailable}</b> unavailable</span><span>📋 <b>${c.coaching}</b> coaching</span><span>⏳ <b>${c.none}</b> not answered</span></div>`
-      :`<div class="avnote">${AV.err?'Couldn’t load the team list. <u id="avRetry">Try again</u>':'Loading the team list…'}</div>`}
-    ${AV.rows?`<button class="avtog" id="avTog">${AV.open?'Hide team list ▴':'See who’s playing ▾'}</button>`:''}
-    ${AV.rows&&AV.open?`<div class="avnote" style="margin-top:0">New answers can take a few minutes to show on everyone's phone.</div><div class="avl">${list.map(n=>{const s=avStatus(n);return `<div class="avr"><span>${n}${n===AV_ME?'<small>(you)</small>':''}</span><span class="avp ${s}">${AV_LBL[s]}</span></div>`}).join('')}</div>`:''}`;}
+  const form=`<div class="note" style="padding:0 0 8px">${head}</div>
+    <div class="avme"><span>I'm</span><select id="avMe"><option value="">— pick your name —</option>${AV_NAMES.map(n=>`<option ${n===AV_ME?'selected':''}>${n}</option>`).join('')}</select></div>
+    <div class="avbt">${AV_OPT.map(([k,l,cl])=>`<button class="${cl} ${mine===k?'on':''}" data-av="${k}" ${dis||AV.busy?'disabled':''}>${l}</button>`).join('')}</div>
+    <div class="note" style="padding:8px 0 0">${AV_ME?'Tap your answer again to undo it, or tap another one to change.':'Pick your name first.'}</div>`;
+  const team=!AV.rows?`<div class="empty">${AV.err?'Couldn’t load the team list. <u id="avRetry">Try again</u>':'Loading the team list…'}</div>`:
+    `<div class="avsum"><span>✅ <b>${c.available}</b> available</span><span>❌ <b>${c.unavailable}</b> unavailable</span><span><b>${c.coaching}</b> coaching</span><span>⏳ <b>${c.none}</b> not answered</span></div>
+     <div class="avl">${list.map(n=>{const s=avStatus(n);return `<div class="avr"><span>${n}${n===AV_ME?'<small>(you)</small>':''}</span><span class="avp ${s}">${AV_LBL[s]}</span></div>`}).join('')}</div>
+     <div class="note" style="padding:8px 0 0">New answers can take a few minutes to show on everyone’s phone.</div>`;
+  return mkt('My Availability','',form)+mkt('Team list','Available first',team);}
 /* ---------- League Ladder & Fixture (info only, not betting) ---------- */
 const LG=DATA.league;
 const LG_ST=LG?Object.fromEntries(LG.standings.map((s,i)=>[s[0],{pos:i+1,w:s[1],l:s[2],pts:s[5],diff:s[6]}])):{};
@@ -723,9 +731,10 @@ function fixtureTab(){
     mkt('✅ Results','Most recent first',past.map(block).join('')||'<div class="empty">No results yet.</div>')+
     `<div class="note">All games at Marden Basketball Centre, 63 Portrush Rd, Marden SA 5070. <a href="https://maps.google.com/?q=Marden+Basketball+Centre+63+Portrush+Rd+Marden+SA" target="_blank" rel="noopener">Open in Maps</a>. Team records and ladder positions are as of this week.</div>`;}
 function renderMarkets(){
+  avPaint();
   document.querySelectorAll('#hq [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===state.tab));
   const t=state.tab;
-  $('#markets').innerHTML = t==='ladder'?ladderTab():t==='fixture'?fixtureTab():t==='popular'?popular():t==='hot'?hotTab():t==='quick'?quickTab():t==='value'?valueTab():t==='lines'?lines():t==='pts'?ladderMarket('pts','Player Points',81)+'':t==='3pm'?ladderMarket('3pm','Player 3-Pointers Made',30):t==='pf'?ladderMarket('pf','Player Fouls',30):t==='ou'?ouMarket('pts')+ouMarket('3pm')+ouMarket('pf'):t==='opp'?oppTab():t==='top'?topTab():t==='form'?form():t==='results'?resultsTab():mybets();
+  $('#markets').innerHTML = t==='avail'?availTab():t==='ladder'?ladderTab():t==='fixture'?fixtureTab():t==='popular'?popular():t==='hot'?hotTab():t==='quick'?quickTab():t==='value'?valueTab():t==='lines'?lines():t==='pts'?ladderMarket('pts','Player Points',81)+'':t==='3pm'?ladderMarket('3pm','Player 3-Pointers Made',30):t==='pf'?ladderMarket('pf','Player Fouls',30):t==='ou'?ouMarket('pts')+ouMarket('3pm')+ouMarket('pf'):t==='opp'?oppTab():t==='top'?topTab():t==='form'?form():t==='results'?resultsTab():mybets();
 }
 /* ---------- slip ---------- */
 /* ---------- Same Game Multi pricing ----------
@@ -891,9 +900,8 @@ document.addEventListener('click',e=>{
   const sel=e.target.closest('[data-sel]'); if(sel){toggle(sel.dataset.sel);return}
   const av=e.target.closest('[data-av]'); if(av){avSet(av.dataset.av);return}
   if(e.target.id==='avRetry'){AV.err=false;avPaint();avLoad();return}
-  if(e.target.id==='avTog'){AV.open=!AV.open;avPaint();return}
   const fx=e.target.closest('[data-fx]'); if(fx){FX_ALL=fx.dataset.fx==='all';renderMarkets();return}
-  const tab=e.target.closest('[data-tab]'); if(tab){state.tab=tab.dataset.tab;renderAll();if(tab.closest('#hq'))$('#tabs').scrollIntoView({behavior:'smooth',block:'start'});return}
+  const tab=e.target.closest('[data-tab]'); if(tab){state.tab=tab.dataset.tab;renderAll();if(tab.closest('#hq')||tab.id==='avbox')$('#tabs').scrollIntoView({behavior:'smooth',block:'start'});return}
   const all=e.target.closest('[data-all]'); if(all){const st=all.dataset.all,keys=PLAYERS.map(p=>st+'-'+pkey(p.name)),anyOpen=keys.some(k=>!COLLAPSED.has(k));keys.forEach(k=>anyOpen?COLLAPSED.add(k):COLLAPSED.delete(k));renderMarkets();return}
   const sh=e.target.closest('[data-share]'); if(sh){const b=[...state.bets,...HIST].find(x=>String(x.id)===sh.dataset.share); if(!b)return; const txt=shareText(b);
     const done=()=>toast('Copied — paste it in the group chat 🏆');
