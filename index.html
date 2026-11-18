@@ -108,6 +108,8 @@ button{font-family:inherit;cursor:pointer}
 .promo.on{border-style:solid;border-color:var(--brand);background:#eef0ff}
 .promo.on small{color:var(--win)}
 .promo:disabled{opacity:.4}
+.psc{background:#f1e8ff;color:#6b2fc4}
+.note.sc{padding:0 0 4px;color:#6b2fc4}
 s.was{color:#9aa0b3;font-weight:500;margin-right:3px}
 .confirm{background:#fffbe6;border:1px solid #f5d76e;border-radius:8px;padding:10px;margin-bottom:6px;font-size:13px}
 .confirm .cl{font-size:12px;color:var(--ink);padding:3px 0;border-bottom:1px dashed #eadf9f}
@@ -384,14 +386,14 @@ function form(){
 }
 function mybets(){
   const list = state.bets.slice().reverse().map(b=>{
-    const pill = b.status==='open'?'<span class="pill po">OPEN</span>':b.status==='won'?'<span class="pill pw">WON '+fmt(b.stake*b.odds)+'</span>':b.status==='void'?'<span class="pill po">VOID</span>':'<span class="pill pl">LOST</span>';
-    return `<div class="bet"><div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span>${pill}</div>${b.scRefund?`<div class="note" style="padding:0 0 4px;color:var(--win)">🔁 Second Chance: ${fmt(b.scRefund)} back</div>`:''}${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}<div class="top2" style="margin:6px 0 0"><span>Potential return</span><b style="color:var(--ink)">${fmt(b.stake*b.odds)}</b></div></div>`;
+    const pill = b.status==='open'?'<span class="pill po">OPEN</span>':b.status==='won'?'<span class="pill pw">WON '+fmt(b.stake*b.odds)+'</span>':b.status==='void'?'<span class="pill po">VOID</span>':b.scRefund?'<span class="pill psc">🔁 SECOND CHANCE +'+fmt(b.scRefund)+'</span>':'<span class="pill pl">LOST</span>';
+    return `<div class="bet"><div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span>${pill}</div>${b.scRefund?`<div class="note sc">Lost by one leg — ${fmt(b.scRefund)} (25% of stake) paid back by Second Chance</div>`:''}${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}<div class="top2" style="margin:6px 0 0"><span>Potential return</span><b style="color:var(--ink)">${fmt(b.stake*b.odds)}</b></div></div>`;
   }).join('') || '<div class="empty">No bets placed yet.</div>';
   return mkt('My Bets',DATA.round,list)+`<div class="note">Bets settle automatically — results are added after each game (Thursday ~11:30pm). Open WalkerBet after that and your winnings land; settled bets move to Results.</div>`;
 }
 function betCard(b){
-  const pill = b.status==='open'?'<span class="pill po">OPEN</span>':b.status==='won'?'<span class="pill pw">WON '+fmt(b.stake*b.odds)+'</span>':b.status==='void'?'<span class="pill po">VOID</span>':'<span class="pill pl">LOST</span>';
-  return `<div class="bet"><div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span>${pill}</div>${b.scRefund?`<div class="note" style="padding:0 0 4px;color:var(--win)">🔁 Second Chance: ${fmt(b.scRefund)} back</div>`:''}${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}</div>`;}
+  const pill = b.status==='open'?'<span class="pill po">OPEN</span>':b.status==='won'?'<span class="pill pw">WON '+fmt(b.stake*b.odds)+'</span>':b.status==='void'?'<span class="pill po">VOID</span>':b.scRefund?'<span class="pill psc">🔁 SECOND CHANCE +'+fmt(b.scRefund)+'</span>':'<span class="pill pl">LOST</span>';
+  return `<div class="bet"><div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span>${pill}</div>${b.scRefund?`<div class="note sc">Lost by one leg — ${fmt(b.scRefund)} (25% of stake) paid back by Second Chance</div>`:''}${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}</div>`;}
 function resultsTab(){
   if(!HIST.length) return mkt('Results','','<div class="empty">No settled bets yet. Bets land here once the result is added (Thursday ~11:30pm) and stay here week to week.</div>');
   const st=HIST.reduce((a,b)=>a+b.stake,0), ret=HIST.reduce((a,b)=>a+(b.status==='won'?b.stake*b.odds:b.status==='void'?b.stake:0)+(b.scRefund||0),0), w=HIST.filter(b=>b.status==='won').length, dec=HIST.filter(b=>b.status!=='void').length||1;
@@ -467,11 +469,11 @@ function sgm(){const ids=state.slip,n=ids.length;
   return {ok:true,straight,price,cut:1-price/straight};}
 function canMulti(){return sgm().ok}
 function baseMultiOdds(){return sgm().price}
-function multiOdds(){const p=baseMultiOdds();return PROMO_SEL.boost?Math.round(p*1.05*100)/100:p}
+function multiOdds(){const p=baseMultiOdds();return PROMO_SEL.boost?Math.round(p*1.125*100)/100:p}
 function promoBox(){
   const P=state.promos||{boost:0,second:0};
   const chip=(k,title,desc,left)=>`<button class="promo ${PROMO_SEL[k]?'on':''}" data-promo="${k}" ${left<=0&&!PROMO_SEL[k]?'disabled':''}><b>${title}</b><span>${desc}</span><small>${PROMO_SEL[k]?'Applied ✓':left+' left'}</small></button>`;
-  return `<div class="promos">${chip('boost','⚡ Walky Time Bet BOOST','Boosts your payout by 5%',P.boost)}${chip('second','🔁 Second Chance','25% back if one leg misses',P.second)}</div>`;}
+  return `<div class="note" style="padding:8px 0 0">Promos — pick one per bet</div><div class="promos" title="One promo per bet">${chip('boost','⚡ Walky Time Bet BOOST','Boosts your payout by 12.5%',P.boost)}${chip('second','🔁 Second Chance','25% back if one leg misses',P.second)}</div>`;}
 let stakes={};
 function renderSlip(){
   if(!canMulti())PROMO_SEL={boost:false,second:false};
@@ -548,7 +550,7 @@ document.addEventListener('click',e=>{
   const mh=e.target.closest('.mh'); if(mh){const card=mh.parentElement;card.classList.toggle('closed');const k=card.dataset.oppk;if(k){card.classList.contains('closed')?COLLAPSED.add(k):COLLAPSED.delete(k)}return}
   const rm=e.target.closest('[data-rm]'); if(rm){state.slip=state.slip.filter(x=>x!==rm.dataset.rm);delete stakes[rm.dataset.rm];renderAll();return}
   const q=e.target.closest('[data-q]'); if(q){stakes.multi=(+stakes.multi||0)+ +q.dataset.q;renderSlip();return}
-  const pm=e.target.closest('[data-promo]'); if(pm){const k=pm.dataset.promo;if(!PROMO_SEL[k]&&(state.promos[k]||0)<=0)return;PROMO_SEL[k]=!PROMO_SEL[k];CONFIRMING=false;renderSlip();return}
+  const pm=e.target.closest('[data-promo]'); if(pm){const k=pm.dataset.promo;if(!PROMO_SEL[k]&&(state.promos[k]||0)<=0)return;const on=!PROMO_SEL[k];PROMO_SEL={boost:false,second:false};PROMO_SEL[k]=on;CONFIRMING=false;renderSlip();return}
   if(e.target.id==='placeBtn'){CONFIRMING=true;renderFoot();return}
   if(e.target.id==='cancelBtn'){CONFIRMING=false;renderFoot();return}
   if(e.target.id==='confirmBtn'){CONFIRMING=false;place();return}
