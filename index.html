@@ -246,10 +246,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="81057e167c">
+<meta name="wb-version" content="41a8a23235">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='81057e167c',busy=false;
+(function(){var mine='41a8a23235',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -631,10 +631,16 @@ function multiPrice(ids){
   if(o.length===2){const hi=Math.max(...o), lo=Math.min(...o); return Math.ceil(hi*(1+(lo-1)*MULTI_TWO_KEEP)*100-1e-9)/100;}
   const straight=o.reduce((a,x)=>a*x,1), bonus=Math.min(MULTI_BONUS_CAP,1+MULTI_BONUS_STEP*(o.length-2));
   return Math.ceil(straight*bonus*100-1e-9)/100;}
+/* Multi prices always round UP to the nearest 5c; anything landing 1.54–1.68 becomes 1.61 (culture). */
+const up5=p=>Math.round(Math.ceil(Math.round(p*100)/5-1e-9)*5)/100;
+const fin=p=>{p=up5(p); return (p>=1.54&&p<=1.68)?1.61:p;};
 function sgmFor(ids){
   const r=sgmRaw(ids); if(!r.ok) return r;
   let price=SEL[ids[0]].odds;
-  for(let k=2;k<=ids.length;k++) price=Math.max(multiPrice(ids.slice(0,k)),Math.round((price+0.01)*100)/100);  // each new leg pushes it higher
+  for(let k=2;k<=ids.length;k++){
+    let c=fin(Math.max(multiPrice(ids.slice(0,k)),price+0.01));    // each new leg pushes it higher
+    while(c<=price) c=fin(Math.round((c+0.05)*100)/100);
+    price=c;}
   return {ok:true,straight:r.straight,price,cut:1-price/r.straight};}
 function sgmRaw(ids){const n=ids.length;
   if(n<2) return {ok:false};
@@ -651,7 +657,7 @@ function sgmRaw(ids){const n=ids.length;
   return {ok:true,straight,price,cut:1-price/straight};}
 function canMulti(){return sgm().ok}
 function baseMultiOdds(){return sgm().price}
-function multiOdds(){const p=baseMultiOdds();return PROMO_SEL.boost?Math.round(p*1.125*100)/100:p}
+function multiOdds(){const p=baseMultiOdds();return PROMO_SEL.boost?up5(p*1.125):p}
 function promoBox(){
   const P=state.promos||{boost:0,second:0};
   const chip=(k,title,desc,left)=>`<button class="promo ${PROMO_SEL[k]?'on':''}" data-promo="${k}" ${left<=0&&!PROMO_SEL[k]?'disabled':''}><b>${title}</b><span>${desc}</span><small>${PROMO_SEL[k]?'Applied ✓':left+' left'}</small></button>`;
