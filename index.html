@@ -203,7 +203,6 @@ th,td{padding:6px 4px}
   <div class="tag">Just for fun · no real money</div>
   <div class="sp"></div>
   <div class="bal"><div><small>Fun bucks</small><span id="bal">$50.00</span></div></div>
-  <button class="btn-ghost" id="resetBtn">Reset</button>
 </div></div>
 
 
@@ -558,7 +557,6 @@ document.addEventListener('click',e=>{
   if(e.target.id==='closeSlip')closeSlip();
   if(e.target.closest('#fab'))openSlip();
   if(e.target.id==='clearHist'){if(e.target.dataset.c){HIST=[];saveHist();renderAll();toast('History cleared')}else{e.target.dataset.c=1;e.target.textContent='Tap again to clear'}}
-  if(e.target.id==='resetBtn'){if(e.target.dataset.c){state={bal:DATA.start_balance,slip:[],bets:[],tab:'popular',round:DATA.round,promos:{...PROMO_START}};stakes={};save();renderAll();toast('Fresh '+fmt(DATA.start_balance)+' loaded');delete e.target.dataset.c;e.target.textContent='Reset'}else{e.target.dataset.c=1;e.target.textContent='Tap again to reset';setTimeout(()=>{if(e.target.dataset.c){delete e.target.dataset.c;e.target.textContent='Reset'}},3000)}}
 });
 document.addEventListener('input',e=>{
   const k=e.target.dataset.stake; if(!k)return;
