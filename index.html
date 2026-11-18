@@ -39,7 +39,12 @@ button{font-family:inherit;cursor:pointer}
 .team{font-family:'Barlow Condensed';font-weight:700;font-size:26px;line-height:1}
 .team small{display:block;font-family:Inter;font-size:11px;font-weight:500;color:#cfcaf7;margin-top:4px}
 .vs{font-size:12px;color:#a9a3e0;font-weight:600}
-.tabs{display:flex;flex-wrap:wrap;gap:6px;padding:10px;border-bottom:1px solid var(--line);background:#fff}
+.tabs{display:flex;flex-direction:column;gap:6px;padding:10px;border-bottom:1px solid var(--line);background:#fff}
+.trow{display:flex;flex-wrap:wrap;gap:6px}
+.trow:first-child button{flex:1}
+.trow:nth-child(2) button{flex:1}
+.tabs button.mine{background:#fff3c4;color:#5a4300;border:1px solid #f0d77a}
+.tabs button.mine.on{background:#f5c400;color:#1b1446;border-color:#f5c400}
 .tabs button{border:0;background:var(--odds);padding:7px 11px;border-radius:16px;font-weight:600;font-size:12px;color:var(--ink);white-space:nowrap}
 .tabs button.on{background:var(--brand);color:#fff}
 .tabs .badge{background:var(--acc);color:var(--accInk)}
@@ -213,10 +218,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="dcac924487">
+<meta name="wb-version" content="983348bad7">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='dcac924487',busy=false;
+(function(){var mine='983348bad7',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -363,10 +368,12 @@ function oppTab(){
   return mkt(`${OS.team} — team averages`,'',kv)+mkt('Top scorers','Season, games played',scorers)+mkt('Top 3-point shooters','',threes)+mkt('Most fouls','',fouls)+mkt('Results & scores','Most recent first',res);
 }
 /* ---------- render ---------- */
-const TABS=[['popular','Popular'],['hot','🔥 Hot Legs'],['value','💎 Value Picks'],['quick','⚡ Quick Bets'],['lines','Match'],['pts','Points'],['3pm','Threes'],['pf','Fouls'],['ou','Over/Under'],['top','Top Scorer'],['opp','Oppo Stats'],['form','Walky stats'],['mybets','My Bets'],['results','Results']];
+const TABS=[['popular','Popular'],['hot','🔥 Hot Legs'],['value','💎 Value Picks'],['quick','⚡ Quick Bets'],['lines','Match'],['pts','Points'],['3pm','Threes'],['pf','Fouls'],['ou','Over/Under'],['top','Top Scorer'],['opp','📋 Oppo stats'],['form','📊 Walky stats'],['mybets','🧾 My Bets'],['results','🏆 Results']];
 function renderTabs(){
   const open = state.bets.filter(b=>b.status==='open').length;
-  $('#tabs').innerHTML = TABS.map(([k,l])=>`<button data-tab="${k}" class="${state.tab===k?'on':''}">${l}${k==='mybets'&&open?`<span class="badge">${open}</span>`:''}</button>`).join('');
+  const L=Object.fromEntries(TABS), b=(k,cls='')=>`<button data-tab="${k}" class="${cls} ${state.tab===k?'on':''}">${L[k]}${k==='mybets'&&open?`<span class="badge">${open}</span>`:''}</button>`;
+  const rows=[['mybets','results'],['form','opp'],TABS.map(x=>x[0]).filter(k=>!['mybets','results','form','opp'].includes(k))];
+  $('#tabs').innerHTML = `<div class="trow">${rows[0].map(k=>b(k,'mine')).join('')}</div><div class="trow">${rows[1].map(k=>b(k)).join('')}</div><div class="trow">${rows[2].map(k=>b(k)).join('')}</div>`;
 }
 const isSel = id=>state.slip.includes(id);
 function obtn(s){return `<button class="ob ${isSel(s.id)?'sel':''}" data-sel="${s.id}"><span class="l">${s.btn||s.label}</span><span class="o">${fo(s.odds)}</span></button>`}
@@ -434,31 +441,44 @@ function rng(seedStr){let h=1779033703^seedStr.length;for(let i=0;i<seedStr.leng
   return function(){h=Math.imul(h^(h>>>16),2246822507);h=Math.imul(h^(h>>>13),3266489909);h^=h>>>16;return (h>>>0)/4294967296}}
 function buildQuick(){
   const R=rng(DATA.round+'quick');
-  // pool: alt points / threes / fouls ladders with a fair price and a decent strike rate
   const pool=[];
   ['pts','3pm','pf'].forEach(st=>PS[st].forEach(({p,sels})=>sels.forEach(s=>{const [h,n]=s.hit.split('/').map(Number);
     if(s.odds>=1.15&&s.odds<=2.6&&n&&h/n>=0.4) pool.push({id:s.id,p:p.name,st,odds:s.odds});})));
-  const h2h=T.h2h[0];
-  const targets=[2.3,2.75,3.2,3.7,4.3,4.85], out=[], used=new Set();
+  // make sure everyone has points legs to choose from (fair spread), even if their strike rate is lower
+  PS.pts.forEach(({p,sels})=>{if(pool.filter(x=>x.p===p.name&&x.st==='pts').length<2) sels.forEach(s=>{if(s.odds>=1.15&&s.odds<=2.6&&!pool.some(x=>x.id===s.id)) pool.push({id:s.id,p:p.name,st:'pts',odds:s.odds})})});
+  const players=[...new Set(pool.map(x=>x.p))], use=Object.fromEntries(players.map(p=>[p,0]));
+  const STW={pts:0.72,'3pm':0.2,pf:0.08};                 // mostly points, some threes, the odd foul
+  const h2h=T.h2h[0], targets=[2.3,2.75,3.2,3.7,4.3,4.85], out=[], used=new Set(); let foulsUsed=0;
+  const pickPlayer=(taken)=>{ // least-used players are much more likely to be picked → fair spread across the 6 multis
+    const c=players.filter(p=>(taken[p]||0)<2); if(!c.length) return null;
+    const w=c.map(p=>1/Math.pow(use[p]+(taken[p]||0)+1,3)), tot=w.reduce((a,b)=>a+b,0); let r=R()*tot;
+    for(let i=0;i<c.length;i++){r-=w[i];if(r<=0)return c[i]} return c[c.length-1];};
+  const pickStat=(opts)=>{const tot=opts.reduce((a,s)=>a+STW[s],0);let r=R()*tot;for(const s of opts){r-=STW[s];if(r<=0)return s}return opts[0]};
   targets.forEach((tg,ti)=>{
     let best=null;
-    for(let tries=0;tries<4000;tries++){
-      const nLegs=3+Math.floor(R()*3), ids=[], seenP={};
-      if((ti===1||ti===4)&&h2h.odds<1.9) ids.push(h2h.id);           // the odd Walkerville head-to-head leg
-      let guard=0;
-      while(ids.length<nLegs&&guard++<40){const c=pool[Math.floor(R()*pool.length)];
-        if(ids.includes(c.id)||ids.some(i=>SEL[i].mkt===SEL[c.id].mkt)) continue;
-        if((seenP[c.p]||0)>=2) continue; seenP[c.p]=(seenP[c.p]||0)+1; ids.push(c.id);}
+    for(let tries=0;tries<5000;tries++){
+      const nLegs=3+Math.floor(R()*3), ids=[], taken={}; let fouls=0, guard=0;
+      if((ti===1||ti===4)&&h2h.odds<1.9) ids.push(h2h.id);
+      while(ids.length<nLegs&&guard++<40){
+        const p=pickPlayer(taken); if(!p) break;
+        let opts=['pts','3pm','pf'].filter(st=>pool.some(x=>x.p===p&&x.st===st));
+        if(fouls>=1||foulsUsed>=3) opts=opts.filter(s=>s!=='pf'); if(!opts.length) continue;
+        const st=pickStat(opts), legs=pool.filter(x=>x.p===p&&x.st===st&&!ids.some(i=>SEL[i].mkt===SEL[x.id].mkt)); if(!legs.length) continue;
+        const c=legs[Math.floor(R()*legs.length)]; ids.push(c.id); taken[p]=(taken[p]||0)+1; if(st==='pf')fouls++;}
       if(ids.length<3) continue;
-      const odds=ids.map(i=>SEL[i].odds); if(Math.max(...odds)-Math.min(...odds)<0.35) continue;   // legs ranging in value
+      const odds=ids.map(i=>SEL[i].odds); if(Math.max(...odds)-Math.min(...odds)<0.3) continue;
       const g=sgmFor(ids); if(!g.ok||g.price<2.15||g.price>5) continue;
       const key=[...ids].sort().join(); if(used.has(key)) continue;
-      const score=Math.abs(g.price-tg)+(ids.filter(i=>out.some(m=>m.ids.includes(i))).length*0.15);
+      const after={...use}; ids.forEach(i=>{const x=pool.find(y=>y.id===i);if(x)after[x.p]++});
+      const vals=Object.values(after), spread=Math.max(...vals)-Math.min(...vals);
+      const score=Math.abs(g.price-tg)+spread*0.25;
       if(!best||score<best.score) best={ids,price:g.price,score,key};
     }
-    if(best){used.add(best.key);out.push(best);}
+    if(best){used.add(best.key);out.push(best);best.ids.forEach(i=>{const x=pool.find(y=>y.id===i);if(x){use[x.p]++;if(x.st==='pf')foulsUsed++}});}
   });
+  QUICK_USE=use;
   return out.sort((a,b)=>a.price-b.price);}
+let QUICK_USE={};
 const QNAMES=['Walky Warm-Up','Bread & Butter','Bench Boost','Thursday Special','Panther Pounce','Big Night Out'];
 function quickTab(){
   if(!QUICK) QUICK=buildQuick();
