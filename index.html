@@ -246,10 +246,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="f47f7bd920">
+<meta name="wb-version" content="a6734d1991">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='f47f7bd920',busy=false;
+(function(){var mine='a6734d1991',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -621,14 +621,19 @@ function pair(a,b){ // returns factor, or a string = reason it's blocked
   if(a.c==='top'&&b.c==='top') return 'Only one top scorer';
   return 1;}
 function sgm(){return sgmFor(state.slip)}
-/* Multi price = biggest leg × each other leg multiplied in at 75% of its value: max × Π (1 + 0.75 × (price − 1)).
-   Every leg always adds value, and it compounds (exponential) as legs are added. Contradicting/doubled-up combos are still blocked. */
-const SGM_LEG_KEEP=0.75;
+/* Multi price: biggest leg counts in full; the other legs are multiplied in, in the order picked, each at a
+   higher share of its value than the last: 75%, 80%, 85% … (max 100%). Every leg adds at least 1c and the price
+   never drops when a leg is added. Contradicting / same-market combos are still blocked. */
+const SGM_KEEP_START=0.75, SGM_KEEP_STEP=0.05;
+function multiPrice(ids){
+  const o=ids.map(id=>SEL[id].odds); const bi=o.indexOf(Math.max(...o));
+  let p=o[bi], j=0;
+  o.forEach((x,i)=>{if(i===bi)return; const keep=Math.min(1,SGM_KEEP_START+SGM_KEEP_STEP*j++); p*=1+(x-1)*keep;});
+  return Math.ceil(p*100-1e-9)/100;}
 function sgmFor(ids){
   const r=sgmRaw(ids); if(!r.ok) return r;
-  const o=ids.map(id=>SEL[id].odds).sort((x,y)=>y-x);          // biggest leg counts in full
-  let price=o.slice(1).reduce((a,x)=>a*(1+(x-1)*SGM_LEG_KEEP),o[0]);
-  price=Math.round((Math.ceil(price*100-1e-9)/100+0.01*(ids.length-1))*100)/100;   // every leg adds at least 1c
+  let price=SEL[ids[0]].odds;
+  for(let k=2;k<=ids.length;k++) price=Math.max(multiPrice(ids.slice(0,k)),Math.round((price+0.01)*100)/100);  // each new leg pushes it higher
   return {ok:true,straight:r.straight,price,cut:1-price/r.straight};}
 function sgmRaw(ids){const n=ids.length;
   if(n<2) return {ok:false};
