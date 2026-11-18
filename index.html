@@ -246,10 +246,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="59e1149603">
+<meta name="wb-version" content="81057e167c">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='59e1149603',busy=false;
+(function(){var mine='81057e167c',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -621,15 +621,16 @@ function pair(a,b){ // returns factor, or a string = reason it's blocked
   if(a.c==='top'&&b.c==='top') return 'Only one top scorer';
   return 1;}
 function sgm(){return sgmFor(state.slip)}
-/* Multi price: biggest leg counts in full; the other legs are multiplied in, in the order picked, each at a
-   higher share of its value than the last: 75%, 90%, 105%, 120% … (max 150%) — big multis beat plain multiplication. Every leg adds at least 1c and the price
-   never drops when a leg is added. Contradicting / same-market combos are still blocked. */
-const SGM_KEEP_START=0.75, SGM_KEEP_STEP=0.15, SGM_KEEP_MAX=1.5;
+/* Multi price:
+   - 2 legs: biggest leg in full × the other at 75% of its value (a little under plain multiplication)
+   - 3+ legs: plain multiplied price × a growing multi bonus: +5% at 3 legs, +10% at 4, +15% at 5 … capped at 140%
+   Every added leg raises the price (min +1c). Contradicting / same-market combos are still blocked. */
+const MULTI_TWO_KEEP=0.75, MULTI_BONUS_STEP=0.05, MULTI_BONUS_CAP=1.40;
 function multiPrice(ids){
-  const o=ids.map(id=>SEL[id].odds); const bi=o.indexOf(Math.max(...o));
-  let p=o[bi], j=0;
-  o.forEach((x,i)=>{if(i===bi)return; const keep=Math.min(SGM_KEEP_MAX,SGM_KEEP_START+SGM_KEEP_STEP*j++); p*=1+(x-1)*keep;});
-  return Math.ceil(p*100-1e-9)/100;}
+  const o=ids.map(id=>SEL[id].odds);
+  if(o.length===2){const hi=Math.max(...o), lo=Math.min(...o); return Math.ceil(hi*(1+(lo-1)*MULTI_TWO_KEEP)*100-1e-9)/100;}
+  const straight=o.reduce((a,x)=>a*x,1), bonus=Math.min(MULTI_BONUS_CAP,1+MULTI_BONUS_STEP*(o.length-2));
+  return Math.ceil(straight*bonus*100-1e-9)/100;}
 function sgmFor(ids){
   const r=sgmRaw(ids); if(!r.ok) return r;
   let price=SEL[ids[0]].odds;
