@@ -234,10 +234,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="67f18e065f">
+<meta name="wb-version" content="55428c7d3a">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='67f18e065f',busy=false;
+(function(){var mine='55428c7d3a',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -599,7 +599,21 @@ function pair(a,b){ // returns factor, or a string = reason it's blocked
   if(a.c==='top'&&b.c==='top') return 'Only one top scorer';
   return 1;}
 function sgm(){return sgmFor(state.slip)}
-function sgmFor(ids){const n=ids.length;
+/* Every extra leg must make the multi worth more: price(legs) ≥ price(legs without leg i) × (1 + 60% of leg i's value).
+   Starting from singles this compounds leg by leg, so price climbs exponentially as legs are added, but stays below
+   plain multiplication because correlation and the multi margin still apply. */
+const SGM_LEG_KEEP=0.6, SGM_MEMO={};
+function sgmFor(ids){
+  const key=[...ids].sort().join('|'); if(SGM_MEMO[key]) return SGM_MEMO[key];
+  const r=sgmRaw(ids);
+  if(r.ok && ids.length>=2){
+    let floor=0;
+    ids.forEach(id=>{const rest=ids.filter(x=>x!==id); const pr=rest.length===1?SEL[rest[0]].odds:sgmFor(rest).price;
+      floor=Math.max(floor,Math.ceil(pr*(1+(SEL[id].odds-1)*SGM_LEG_KEEP)*100)/100,Math.round((pr+0.01)*100)/100);});
+    if(floor>r.price){r.price=Math.min(floor,Math.floor(r.straight*100)/100); r.cut=1-r.price/r.straight;}
+  }
+  return SGM_MEMO[key]=r;}
+function sgmRaw(ids){const n=ids.length;
   if(n<2) return {ok:false};
   const ms=ids.map(id=>SEL[id].mkt); if(new Set(ms).size!==n) return {ok:false,why:'Two picks from the same market — remove one'};
   const L=ids.map(legInfo); let corr=1;
