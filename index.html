@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WalkerBet — Packing Heat v Walkerville (R20)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef0f5; --card:#fff; --ink:#151a2d; --muted:#6b7286; --line:#e2e5ee;
+  --brand:#1b1446; --brand2:#2b2170; --acc:#c8ff3e; --accInk:#1b1446;
+  --odds:#f3f5fa; --oddsHover:#e6e9f3; --sel:#1b1446; --win:#139a5b; --loss:#d23c3c;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+button{font-family:inherit;cursor:pointer}
+.top{background:var(--brand);color:#fff;position:sticky;top:0;z-index:30}
+.topin{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:10px 16px}
+.logo{font-family:'Barlow Condensed';font-weight:800;font-size:28px;letter-spacing:.5px;font-style:italic}
+.logo span{color:var(--acc)}
+.tag{font-size:11px;background:rgba(255,255,255,.12);padding:3px 8px;border-radius:20px;color:#d9d6ff}
+.sp{flex:1}
+.bal{display:flex;align-items:center;gap:8px;font-weight:700}
+.bal small{display:block;font-weight:500;font-size:10px;color:#bdb8ea;text-transform:uppercase;letter-spacing:.6px}
+.btn-ghost{background:rgba(255,255,255,.1);border:0;color:#fff;padding:7px 11px;border-radius:6px;font-size:12px;font-weight:600}
+.sportnav{background:var(--brand2)}
+.sportnav .in{max-width:1240px;margin:0 auto;display:flex;gap:4px;padding:0 16px;overflow-x:auto}
+.sportnav a{color:#cfcaf7;text-decoration:none;font-size:13px;font-weight:600;padding:10px 12px;white-space:nowrap;border-bottom:3px solid transparent}
+.sportnav a.on{color:#fff;border-color:var(--acc)}
+.wrap{max-width:1240px;margin:0 auto;padding:14px 16px 90px;display:grid;grid-template-columns:1fr 340px;gap:16px}
+.crumb{font-size:12px;color:var(--muted);margin-bottom:10px}
+.crumb b{color:var(--ink)}
+.event{background:var(--card);border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.ehead{background:linear-gradient(120deg,var(--brand) 0%,#3a2a8f 100%);color:#fff;padding:16px 18px}
+.emeta{font-size:12px;color:#cfcaf7;display:flex;gap:10px;flex-wrap:wrap}
+.live{background:var(--acc);color:var(--accInk);font-weight:700;padding:1px 7px;border-radius:4px;font-size:11px}
+.teams{display:flex;align-items:center;gap:14px;margin:12px 0 4px}
+.team{font-family:'Barlow Condensed';font-weight:700;font-size:26px;line-height:1}
+.team small{display:block;font-family:Inter;font-size:11px;font-weight:500;color:#cfcaf7;margin-top:4px}
+.vs{font-size:12px;color:#a9a3e0;font-weight:600}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;padding:10px;border-bottom:1px solid var(--line);background:#fff}
+.tabs button{border:0;background:var(--odds);padding:7px 11px;border-radius:16px;font-weight:600;font-size:12px;color:var(--ink);white-space:nowrap}
+.tabs button.on{background:var(--brand);color:#fff}
+.tabs .badge{background:var(--acc);color:var(--accInk)}
+.tabs .badge{background:var(--brand);color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;margin-left:4px}
+.markets{padding:10px}
+.mkt{border:1px solid var(--line);border-radius:8px;margin-bottom:10px;background:#fff}
+.mh{display:flex;align-items:center;padding:11px 12px;cursor:pointer;user-select:none}
+.mh h3{margin:0;font-size:14px;font-weight:700;flex:1}
+.mh .info{font-size:11px;color:var(--muted);margin-right:10px}
+.mh .chev{transition:transform .2s;color:var(--muted)}
+.mkt.closed .chev{transform:rotate(-90deg)}
+.mkt.closed .mb{display:none}
+.mb{padding:0 12px 12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ob{border:1px solid transparent;background:var(--odds);border-radius:6px;padding:9px 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;min-height:44px;transition:background .12s}
+.ob:hover{background:var(--oddsHover)}
+.ob .l{font-size:13px;font-weight:500;color:var(--ink)}
+.ob .o{font-weight:800;font-size:15px;color:var(--brand)}
+.ob.sel{background:var(--sel);}
+.ob.sel .l,.ob.sel .o{color:#fff}
+.ob.sel .h{color:#bdb8ea}
+.prow{display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.prow:first-child{border-top:0}
+.pname{font-weight:600;font-size:13px}
+.pname small{display:block;color:var(--muted);font-weight:500;font-size:11px;margin-top:2px}
+.ladder{display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:6px}
+.lb{border:0;background:var(--odds);border-radius:6px;padding:6px 4px;text-align:center;line-height:1.15}
+.lb:hover{background:var(--oddsHover)}
+.lb .t{font-size:11px;color:var(--muted);font-weight:600}
+.lb .o{font-size:14px;font-weight:800;color:var(--brand)}
+.lb .h{font-size:10px;color:#9aa0b3}
+.lb.sel{background:var(--sel)}
+.lb.sel .t,.lb.sel .o{color:#fff}.lb.sel .h{color:#bdb8ea}
+.note{font-size:12px;color:var(--muted);padding:2px 2px 10px}
+/* slip */
+.slip{position:sticky;top:70px;align-self:start;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.sh{background:var(--brand);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px;font-weight:700}
+.sh .cnt{background:var(--acc);color:var(--accInk);border-radius:10px;font-size:11px;padding:1px 7px}
+.sh button{margin-left:auto}
+.sbody{max-height:calc(100vh - 260px);overflow:auto}
+.empty{padding:28px 18px;text-align:center;color:var(--muted);font-size:13px}
+.leg{padding:11px 14px;border-bottom:1px solid var(--line)}
+.leg .r1{display:flex;gap:8px;align-items:flex-start}
+.leg .sn{font-weight:700;font-size:13px;flex:1}
+.leg .mk{font-size:11px;color:var(--muted)}
+.leg .od{font-weight:800;color:var(--brand)}
+.x{border:0;background:none;color:#9aa0b3;font-size:16px;line-height:1;padding:0 2px}
+.stake{display:flex;gap:8px;align-items:center;margin-top:8px}
+.stake input{width:96px;border:1px solid var(--line);border-radius:6px;padding:7px 8px;font-size:13px;font-family:inherit}
+.stake .ret{font-size:11px;color:var(--muted);margin-left:auto;text-align:right}
+.stake .ret b{display:block;color:var(--ink);font-size:13px}
+.multi{background:#f7f6ff;border-top:2px solid var(--brand)}
+.multi .sn{font-family:'Barlow Condensed';font-size:18px}
+.sfoot{padding:12px 14px;border-top:1px solid var(--line)}
+.tot{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
+.tot b{color:var(--ink)}
+.place{width:100%;border:0;border-radius:8px;background:var(--acc);color:var(--accInk);font-weight:800;font-size:15px;padding:13px;margin-top:8px}
+.place:disabled{opacity:.45;cursor:not-allowed}
+.quick{display:flex;gap:4px;margin-top:6px}
+.quick button{border:1px solid var(--line);background:#fff;border-radius:5px;font-size:11px;padding:3px 7px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:8px;font-weight:600;transition:transform .25s;z-index:60}
+.toast.show{transform:translateX(-50%) translateY(0)}
+/* tables */
+table{border-collapse:collapse;width:100%;font-size:12px}
+th,td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--line)}
+th{font-size:11px;color:var(--muted);font-weight:600;background:#fafbfd}
+td:first-child,th:first-child{text-align:left}
+.tblwrap{overflow-x:auto}
+table{table-layout:auto}
+th,td{padding:6px 4px}
+.pcard{border-top:1px solid var(--line);padding:8px 0}
+.pcard:first-child{border-top:0}
+.pcard .nm{display:flex;justify-content:space-between;font-weight:600;font-size:13px}
+.pcard .gl{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6}
+.pcard .gl b{color:var(--ink)}
+.sumgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
+.sumgrid div{background:#fafbfd;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center}
+.sumgrid b{display:block;font-family:'Barlow Condensed';font-size:20px}
+.sumgrid small{font-size:10px;color:var(--muted)}
+.rhead{font-weight:700;font-size:13px;margin:12px 0 6px;display:flex;justify-content:space-between}
+.pill{display:inline-block;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700}
+.pw{background:#e3f7ec;color:var(--win)} .pl{background:#fde7e7;color:var(--loss)} .po{background:#eef0f5;color:var(--muted)}
+.bet{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.bet .top2{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+.bet .lg{font-size:13px;padding:2px 0;display:flex;justify-content:space-between;gap:8px}
+.res{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.res .ri{display:grid;grid-template-columns:1fr 54px 54px 54px;gap:4px;align-items:center;font-size:12px}
+.res input{width:100%;border:1px solid var(--line);border-radius:5px;padding:5px;font-size:12px;text-align:center}
+.btn{border:0;border-radius:6px;background:var(--brand);color:#fff;font-weight:700;padding:9px 14px;font-size:13px}
+.btn.alt{background:#eef0f5;color:var(--ink)}
+.fab{display:none}
+.foot{font-size:11px;color:var(--muted);padding:14px 4px;line-height:1.5}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:12px}
+.kv div{background:#fafbfd;border:1px solid var(--line);border-radius:8px;padding:10px}
+.kv b{display:block;font-size:20px;font-family:'Barlow Condensed'}
+.kv small{color:var(--muted);font-size:11px}
+/* phone-first: narrow column everywhere */
+.topin,.sportnav .in{max-width:480px}
+.topin{padding:10px 12px;gap:10px}
+.logo{font-size:24px}
+.tag{display:none}
+.wrap{max-width:480px;grid-template-columns:1fr;padding:10px 10px 90px}
+
+.ehead{padding:14px}
+.team{font-size:22px}
+.markets{padding:8px}
+.prow{grid-template-columns:1fr;gap:6px}
+.ladder{grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}
+.grid2,.grid3{grid-template-columns:1fr;gap:6px}
+.ladder{grid-template-columns:1fr;gap:5px}
+.lb{max-width:250px;width:100%;display:flex;align-items:center;gap:10px;padding:6px 10px;min-height:32px;text-align:left}
+.lb .t{order:1;flex:1;font-size:12.5px;color:var(--ink);font-weight:500}
+.lb .h{order:2;font-size:10px}
+.lb .o{order:3;font-size:14px}
+.tog{cursor:pointer;user-select:none;display:block;padding:4px 0}
+.tog .pc{display:inline-block;width:16px;color:var(--muted);transition:transform .2s}
+.tog small{margin-left:16px}
+.prow.closed .ladder{display:none}
+.prow.closed .tog .pc{transform:rotate(-90deg)}
+.prow.closed{padding:4px 0}
+.all{color:var(--brand);font-weight:600;text-decoration:underline;cursor:pointer}
+.ob{max-width:250px;width:100%;padding:6px 10px;min-height:34px;gap:12px}
+.ob .l{font-size:12.5px}
+.ob .o{font-size:14px}
+.slip{position:fixed;left:50%;width:100%;max-width:480px;bottom:0;top:auto;border-radius:14px 14px 0 0;transform:translate(-50%,100%);transition:transform .25s;z-index:50;box-shadow:0 -6px 24px rgba(0,0,0,.2);max-height:85vh;display:flex;flex-direction:column}
+.slip.open{transform:translate(-50%,0)}
+.sbody{max-height:none;flex:1}
+.fab{display:flex;position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:40;background:var(--acc);color:var(--accInk);border:0;border-radius:30px;padding:12px 22px;font-weight:800;box-shadow:0 4px 14px rgba(0,0,0,.25);gap:8px;align-items:center}
+.res{grid-template-columns:1fr}
+.stake input{font-size:16px}
+.res input{font-size:16px}
+</style>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WalkerBet">
+<meta name="theme-color" content="#14306b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
+</head>
+<body>
+<div class="top"><div class="topin">
+  <img src="icon-192.png" alt="" style="width:34px;height:34px;border-radius:8px;margin-right:-6px"><div class="logo">WALKER<span>BET</span></div>
+  <div class="tag">Just for fun · no real money</div>
+  <div class="sp"></div>
+  <div class="bal"><div><small>Fun bucks</small><span id="bal">$50.00</span></div></div>
+  <button class="btn-ghost" id="resetBtn">Reset</button>
+</div></div>
+
+
+<div class="wrap">
+<main>
+  <div class="crumb">Basketball › Marden Basketball Centre › Thursday Div 4/5 › <b id="hCrumb"></b></div>
+  <section class="event">
+    <div class="ehead">
+      <div class="emeta"><span class="live" id="hRound"></span><span id="hWhen"></span><span id="hVenue"></span></div>
+      <div class="teams">
+        <div class="team">Walkerville<small id="hWv"></small></div>
+        <div class="vs">VS</div>
+        <div class="team"><span id="hOpp"></span><small id="hOp"></small></div>
+      </div>
+      <div class="emeta" style="margin-top:8px" id="hOutRow"><span style="color:#ffd0d0;font-weight:700" id="hOut"></span></div>
+      <div class="emeta" style="margin-top:4px"><span id="hLast"></span></div>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="markets" id="markets"></div>
+  </section>
+  <div class="foot" id="hFoot"></div>
+</main>
+
+<aside class="slip" id="slip">
+  <div class="sh">Bet Slip <span class="cnt" id="slipCnt">0</span><button class="btn-ghost" id="clearSlip">Clear</button><button class="btn-ghost" id="closeSlip" style="margin-left:4px">✕</button></div>
+  <div class="sbody" id="sbody"></div>
+  <div class="sfoot" id="sfoot"></div>
+</aside>
+</div>
+<button class="fab" id="fab">Bet Slip <span class="cnt" id="fabCnt" style="background:var(--brand);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px">0</span></button>
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = {"round": "R20 v Packing Heat", "opp_team": "Packing Heat", "players": [{"name": "Cody McInnes", "gp": 7, "log": [[0, 0, 0], [18, 2, 3], [25, 3, 0], [20, 4, 1], [9, 0, 0], [23, 1, 2], [29, 2, 1]], "avg": {"pts": 17.7, "3pm": 1.71, "pf": 1.0, "proj": 24.1, "skew": 6.4}, "high": 29, "pts": [{"line": "5+", "odds": 1.01, "hit": "6/7"}, {"line": "6+", "odds": 1.01, "hit": "6/7"}, {"line": "7+", "odds": 1.03, "hit": "6/7"}, {"line": "8+", "odds": 1.03, "hit": "6/7"}, {"line": "9+", "odds": 1.04, "hit": "6/7"}, {"line": "10+", "odds": 1.05, "hit": "5/7"}, {"line": "11+", "odds": 1.05, "hit": "5/7"}, {"line": "12+", "odds": 1.06, "hit": "5/7"}, {"line": "13+", "odds": 1.08, "hit": "5/7"}, {"line": "14+", "odds": 1.1, "hit": "5/7"}, {"line": "15+", "odds": 1.1, "hit": "5/7"}, {"line": "16+", "odds": 1.2, "hit": "5/7"}, {"line": "17+", "odds": 1.25, "hit": "5/7"}, {"line": "18+", "odds": 1.25, "hit": "5/7"}, {"line": "19+", "odds": 1.3, "hit": "4/7"}, {"line": "20+", "odds": 1.35, "hit": "4/7"}, {"line": "21+", "odds": 1.35, "hit": "3/7"}, {"line": "22+", "odds": 1.4, "hit": "3/7"}, {"line": "23+", "odds": 1.45, "hit": "3/7"}, {"line": "24+", "odds": 1.5, "hit": "2/7"}, {"line": "25+", "odds": 1.75, "hit": "2/7"}, {"line": "26+", "odds": 1.8, "hit": "1/7"}, {"line": "27+", "odds": 2.2, "hit": "1/7"}, {"line": "28+", "odds": 2.3, "hit": "1/7"}, {"line": "29+", "odds": 2.4, "hit": "1/7"}, {"line": "30+", "odds": 3.0, "hit": "0/7"}, {"line": "31+", "odds": 3.25, "hit": "0/7"}, {"line": "32+", "odds": 4.5, "hit": "0/7"}, {"line": "33+", "odds": 4.5, "hit": "0/7"}, {"line": "34+", "odds": 5.0, "hit": "0/7"}, {"line": "35+", "odds": 5.5, "hit": "0/7"}, {"line": "36+", "odds": 10.0, "hit": "0/7"}], "3pm": [{"line": "1+", "odds": 1.01, "hit": "5/7"}, {"line": "2+", "odds": 1.25, "hit": "4/7"}, {"line": "3+", "odds": 1.9, "hit": "2/7"}, {"line": "4+", "odds": 3.5, "hit": "1/7"}, {"line": "5+", "odds": 7.5, "hit": "0/7"}, {"line": "6+", "odds": 19.0, "hit": "0/7"}], "pf": [{"line": "1+", "odds": 1.45, "hit": "4/7"}, {"line": "2+", "odds": 2.75, "hit": "2/7"}, {"line": "3+", "odds": 5.5, "hit": "1/7"}, {"line": "4+", "odds": 19.0, "hit": "0/7"}, {"line": "Foul out (5)", "odds": 26.0, "hit": "0/7"}], "ou": {"pts": {"line": 24.5, "over": 1.75, "under": 1.9, "ho": "2/7", "hu": "5/7"}, "3pm": {"line": 2.5, "over": 1.9, "under": 1.75, "ho": "2/7", "hu": "5/7"}, "pf": {"line": 1.5, "over": 2.75, "under": 1.35, "ho": "2/7", "hu": "5/7"}}}, {"name": "Brae Rawnsley", "gp": 7, "log": [[9, 0, 3], [4, 0, 3], [16, 0, 1], [18, 0, 3], [10, 0, 2], [16, 0, 0], [19, 1, 2]], "avg": {"pts": 13.1, "3pm": 0.14, "pf": 2.0, "proj": 18.5, "skew": 5.3}, "high": 19, "pts": [{"line": "5+", "odds": 1.01, "hit": "6/7"}, {"line": "6+", "odds": 1.01, "hit": "6/7"}, {"line": "7+", "odds": 1.01, "hit": "6/7"}, {"line": "8+", "odds": 1.01, "hit": "6/7"}, {"line": "9+", "odds": 1.01, "hit": "6/7"}, {"line": "10+", "odds": 1.03, "hit": "5/7"}, {"line": "11+", "odds": 1.05, "hit": "4/7"}, {"line": "12+", "odds": 1.06, "hit": "4/7"}, {"line": "13+", "odds": 1.08, "hit": "4/7"}, {"line": "14+", "odds": 1.12, "hit": "4/7"}, {"line": "15+", "odds": 1.25, "hit": "4/7"}, {"line": "16+", "odds": 1.45, "hit": "4/7"}, {"line": "17+", "odds": 1.5, "hit": "2/7"}, {"line": "18+", "odds": 1.6, "hit": "2/7"}, {"line": "19+", "odds": 1.7, "hit": "1/7"}, {"line": "20+", "odds": 1.85, "hit": "0/7"}, {"line": "21+", "odds": 2.0, "hit": "0/7"}, {"line": "22+", "odds": 3.0, "hit": "0/7"}, {"line": "23+", "odds": 3.25, "hit": "0/7"}, {"line": "24+", "odds": 5.0, "hit": "0/7"}, {"line": "25+", "odds": 9.0, "hit": "0/7"}, {"line": "26+", "odds": 11.0, "hit": "0/7"}, {"line": "27+", "odds": 13.0, "hit": "0/7"}, {"line": "28+", "odds": 15.0, "hit": "0/7"}, {"line": "29+", "odds": 19.0, "hit": "0/7"}, {"line": "30+", "odds": 21.0, "hit": "0/7"}], "3pm": [{"line": "1+", "odds": 2.5, "hit": "1/7"}, {"line": "2+", "odds": 6.0, "hit": "0/7"}, {"line": "3+", "odds": 15.0, "hit": "0/7"}, {"line": "4+", "odds": 31.0, "hit": "0/7"}], "pf": [{"line": "1+", "odds": 1.05, "hit": "6/7"}, {"line": "2+", "odds": 1.3, "hit": "5/7"}, {"line": "3+", "odds": 2.0, "hit": "3/7"}, {"line": "4+", "odds": 6.0, "hit": "0/7"}, {"line": "Foul out (5)", "odds": 11.0, "hit": "0/7"}], "ou": {"pts": {"line": 18.5, "over": 1.7, "under": 1.95, "ho": "1/7", "hu": "6/7"}, "3pm": {"line": 0.5, "over": 2.5, "under": 1.45, "ho": "1/7", "hu": "6/7"}, "pf": {"line": 2.5, "over": 2.0, "under": 1.65, "ho": "3/7", "hu": "4/7"}}}, {"name": "Archer Schwarz", "gp": 4, "log": [[7, 1, 1], [0, 0, 1], [0, 0, 0], [0, 0, 0], null, null, null], "avg": {"pts": 1.8, "3pm": 0.25, "pf": 0.5, "proj": 0}, "high": 7, "pts": [], "3pm": [], "pf": [], "ou": {}, "out": true}, {"name": "Zac Elliott", "gp": 7, "log": [[19, 2, 3], [5, 0, 3], [17, 0, 0], [2, 0, 2], [8, 0, 1], [23, 1, 2], [16, 0, 3]], "avg": {"pts": 12.9, "3pm": 0.43, "pf": 2.0, "proj": 0}, "high": 23, "pts": [], "3pm": [], "pf": [], "ou": {}, "out": true}, {"name": "Jack Richardson", "gp": 7, "log": [[0, 0, 0], [0, 0, 0], [6, 1, 1], [0, 0, 2], [8, 0, 1], [2, 0, 4], [0, 0, 0]], "avg": {"pts": 2.3, "3pm": 0.14, "pf": 1.14, "proj": 4.2, "skew": 1.9}, "high": 8, "pts": [{"line": "2+", "odds": 1.55, "hit": "3/7"}, {"line": "3+", "odds": 1.65, "hit": "2/7"}, {"line": "4+", "odds": 2.1, "hit": "2/7"}, {"line": "5+", "odds": 2.3, "hit": "2/7"}, {"line": "6+", "odds": 2.6, "hit": "2/7"}, {"line": "7+", "odds": 3.0, "hit": "1/7"}, {"line": "8+", "odds": 4.5, "hit": "1/7"}, {"line": "9+", "odds": 5.5, "hit": "0/7"}, {"line": "10+", "odds": 12.0, "hit": "0/7"}, {"line": "11+", "odds": 15.0, "hit": "0/7"}, {"line": "12+", "odds": 19.0, "hit": "0/7"}], "3pm": [{"line": "1+", "odds": 5.0, "hit": "1/7"}, {"line": "2+", "odds": 26.0, "hit": "0/7"}, {"line": "3+", "odds": 31.0, "hit": "0/7"}, {"line": "4+", "odds": 31.0, "hit": "0/7"}], "pf": [{"line": "1+", "odds": 1.4, "hit": "4/7"}, {"line": "2+", "odds": 2.5, "hit": "2/7"}, {"line": "3+", "odds": 5.0, "hit": "1/7"}, {"line": "4+", "odds": 7.5, "hit": "1/7"}, {"line": "Foul out (5)", "odds": 21.0, "hit": "0/7"}], "ou": {"pts": {"line": 4.5, "over": 2.3, "under": 1.5, "ho": "2/7", "hu": "5/7"}, "3pm": {"line": 0.5, "over": 5.0, "under": 1.1, "ho": "1/7", "hu": "6/7"}, "pf": {"line": 1.5, "over": 2.5, "under": 1.45, "ho": "2/7", "hu": "5/7"}}}, {"name": "Thomas Riggall", "gp": 5, "log": [[9, 1, 1], [0, 0, 0], [0, 0, 0], [0, 0, 0], [2, 0, 0], null, null], "avg": {"pts": 2.2, "3pm": 0.2, "pf": 0.2, "proj": 4.0, "skew": 1.8}, "high": 9, "pts": [{"line": "2+", "odds": 1.6, "hit": "2/5"}, {"line": "3+", "odds": 1.7, "hit": "1/5"}, {"line": "4+", "odds": 2.3, "hit": "1/5"}, {"line": "5+", "odds": 2.6, "hit": "1/5"}, {"line": "6+", "odds": 3.0, "hit": "1/5"}, {"line": "7+", "odds": 3.5, "hit": "1/5"}, {"line": "8+", "odds": 4.0, "hit": "1/5"}, {"line": "9+", "odds": 5.0, "hit": "1/5"}, {"line": "10+", "odds": 5.5, "hit": "0/5"}, {"line": "11+", "odds": 13.0, "hit": "0/5"}, {"line": "12+", "odds": 15.0, "hit": "0/5"}], "3pm": [{"line": "1+", "odds": 3.75, "hit": "1/5"}, {"line": "2+", "odds": 17.0, "hit": "0/5"}, {"line": "3+", "odds": 21.0, "hit": "0/5"}, {"line": "4+", "odds": 21.0, "hit": "0/5"}], "pf": [{"line": "1+", "odds": 3.75, "hit": "1/5"}, {"line": "2+", "odds": 17.0, "hit": "0/5"}, {"line": "3+", "odds": 21.0, "hit": "0/5"}, {"line": "4+", "odds": 21.0, "hit": "0/5"}, {"line": "Foul out (5)", "odds": 21.0, "hit": "0/5"}], "ou": {"pts": {"line": 4.5, "over": 2.6, "under": 1.4, "ho": "1/5", "hu": "4/5"}, "3pm": {"line": 0.5, "over": 3.75, "under": 1.18, "ho": "1/5", "hu": "4/5"}, "pf": {"line": 0.5, "over": 3.75, "under": 1.18, "ho": "1/5", "hu": "4/5"}}}, {"name": "Jai Sihota", "gp": 7, "log": [[0, 0, 0], [0, 0, 0], [5, 1, 0], [5, 1, 1], [0, 0, 1], [5, 1, 1], [4, 0, 0]], "avg": {"pts": 2.7, "3pm": 0.43, "pf": 0.43, "proj": 4.8, "skew": 2.1}, "high": 5, "pts": [{"line": "2+", "odds": 1.05, "hit": "4/7"}, {"line": "3+", "odds": 1.4, "hit": "4/7"}, {"line": "4+", "odds": 1.55, "hit": "4/7"}, {"line": "5+", "odds": 1.65, "hit": "3/7"}, {"line": "6+", "odds": 1.85, "hit": "0/7"}, {"line": "7+", "odds": 2.4, "hit": "0/7"}, {"line": "8+", "odds": 6.0, "hit": "0/7"}, {"line": "9+", "odds": 7.5, "hit": "0/7"}, {"line": "10+", "odds": 10.0, "hit": "0/7"}, {"line": "11+", "odds": 13.0, "hit": "0/7"}, {"line": "12+", "odds": 17.0, "hit": "0/7"}], "3pm": [{"line": "1+", "odds": 2.1, "hit": "3/7"}, {"line": "2+", "odds": 11.0, "hit": "0/7"}, {"line": "3+", "odds": 21.0, "hit": "0/7"}, {"line": "4+", "odds": 26.0, "hit": "0/7"}], "pf": [{"line": "1+", "odds": 2.1, "hit": "3/7"}, {"line": "2+", "odds": 11.0, "hit": "0/7"}, {"line": "3+", "odds": 21.0, "hit": "0/7"}, {"line": "4+", "odds": 26.0, "hit": "0/7"}, {"line": "Foul out (5)", "odds": 31.0, "hit": "0/7"}], "ou": {"pts": {"line": 4.5, "over": 1.65, "under": 2.0, "ho": "3/7", "hu": "4/7"}, "3pm": {"line": 0.5, "over": 2.1, "under": 1.6, "ho": "3/7", "hu": "4/7"}, "pf": {"line": 0.5, "over": 2.1, "under": 1.6, "ho": "3/7", "hu": "4/7"}}}, {"name": "Jack Devenish", "gp": 7, "log": [[15, 2, 3], [5, 1, 4], [9, 3, 0], [12, 2, 2], [22, 3, 0], [14, 4, 3], [12, 2, 1]], "avg": {"pts": 12.7, "3pm": 2.43, "pf": 1.86, "proj": 0}, "high": 22, "pts": [], "3pm": [], "pf": [], "ou": {}, "out": true}, {"name": "Harry Van Essen", "gp": 6, "log": [[0, 0, 1], [2, 0, 0], [2, 0, 1], [2, 0, 5], [7, 1, 0], null, [4, 0, 1]], "avg": {"pts": 2.8, "3pm": 0.17, "pf": 1.33, "proj": 8.2, "skew": 5.4}, "high": 7, "pts": [{"line": "5+", "odds": 1.04, "hit": "1/6"}, {"line": "6+", "odds": 1.18, "hit": "1/6"}, {"line": "7+", "odds": 1.25, "hit": "1/6"}, {"line": "8+", "odds": 1.95, "hit": "0/6"}, {"line": "9+", "odds": 2.2, "hit": "0/6"}, {"line": "10+", "odds": 3.0, "hit": "0/6"}, {"line": "11+", "odds": 3.75, "hit": "0/6"}, {"line": "12+", "odds": 4.5, "hit": "0/6"}, {"line": "13+", "odds": 9.0, "hit": "0/6"}, {"line": "14+", "odds": 11.0, "hit": "0/6"}, {"line": "15+", "odds": 15.0, "hit": "0/6"}, {"line": "16+", "odds": 17.0, "hit": "0/6"}, {"line": "17+", "odds": 21.0, "hit": "0/6"}, {"line": "18+", "odds": 21.0, "hit": "0/6"}, {"line": "19+", "odds": 26.0, "hit": "0/6"}, {"line": "20+", "odds": 26.0, "hit": "0/6"}, {"line": "21+", "odds": 26.0, "hit": "0/6"}, {"line": "22+", "odds": 26.0, "hit": "0/6"}, {"line": "23+", "odds": 26.0, "hit": "0/6"}, {"line": "24+", "odds": 26.0, "hit": "0/6"}, {"line": "25+", "odds": 26.0, "hit": "0/6"}], "3pm": [{"line": "1+", "odds": 4.5, "hit": "1/6"}, {"line": "2+", "odds": 21.0, "hit": "0/6"}, {"line": "3+", "odds": 26.0, "hit": "0/6"}, {"line": "4+", "odds": 26.0, "hit": "0/6"}], "pf": [{"line": "1+", "odds": 1.25, "hit": "4/6"}, {"line": "2+", "odds": 2.6, "hit": "1/6"}, {"line": "3+", "odds": 4.0, "hit": "1/6"}, {"line": "4+", "odds": 6.0, "hit": "1/6"}, {"line": "Foul out (5)", "odds": 7.5, "hit": "1/6"}], "ou": {"pts": {"line": 8.5, "over": 2.2, "under": 1.55, "ho": "0/6", "hu": "6/6"}, "3pm": {"line": 0.5, "over": 4.5, "under": 1.15, "ho": "1/6", "hu": "5/6"}, "pf": {"line": 1.5, "over": 2.6, "under": 1.4, "ho": "1/6", "hu": "5/6"}}}], "topscorer": [{"name": "Cody McInnes", "odds": 1.4}, {"name": "Brae Rawnsley", "odds": 2.75}, {"name": "Harry Van Essen", "odds": 61.0}, {"name": "Jai Sihota", "odds": 101.0}, {"name": "Thomas Riggall", "odds": 101.0}, {"name": "Jack Richardson", "odds": 101.0}], "markets": {"h2h": [{"label": "Walkerville", "odds": 1.08}, {"label": "Packing Heat", "odds": 5.5}], "line": [{"label": "Walkerville -13.5", "odds": 1.9}, {"label": "Packing Heat +13.5", "odds": 1.9}], "line_fav": "W", "total": [{"label": "Over 109.5", "odds": 1.87}, {"label": "Under 109.5", "odds": 1.87}], "wvtotal": [{"label": "Over 57.5", "odds": 1.85}, {"label": "Under 57.5", "odds": 1.8}], "margin": [{"label": "Walkerville 1-10", "odds": 3.75, "lo": 1, "hi": 10}, {"label": "Walkerville 11-20", "odds": 3.25, "lo": 11, "hi": 20}, {"label": "Walkerville 21-30", "odds": 4.5, "lo": 21, "hi": 30}, {"label": "Walkerville 31+", "odds": 8.0, "lo": 31, "hi": 999}, {"label": "Packing Heat 1-10", "odds": 8.0, "lo": -10, "hi": -1}, {"label": "Packing Heat 11+", "odds": 21.0, "lo": -999, "hi": -11}]}, "match": {"exp_wv": 57.3, "exp_cc": 43.7, "p_wv": 0.835, "wv_for": [59, 34, 80, 59, 66, 83, 84], "wv_ag": [38, 47, 44, 56, 37, 43, 45], "rounds": ["R12 v 67ers", "R13 v Crutch City", "R14 v Kobe Ds", "R15 v Thorndon", "R16 v Adl Uni", "R17 v Muppets", "R19 v Crutch City"], "rounds_short": ["R12 v 67ers", "R13 v Crutch City", "R14 v Kobe Ds", "R15 v Thorndon", "R16 v Adl Uni", "R17 v Muppets", "R19 v Crutch City"], "results": [{"lbl": "R12 v 67ers", "f": 59, "a": 38, "fft": false}, {"lbl": "R13 v Crutch City", "f": 34, "a": 47, "fft": false}, {"lbl": "R14 v Kobe Ds", "f": 80, "a": 44, "fft": false}, {"lbl": "R15 v Thorndon", "f": 59, "a": 56, "fft": false}, {"lbl": "R16 v Adl Uni", "f": 66, "a": 37, "fft": false}, {"lbl": "R17 v Muppets", "f": 83, "a": 43, "fft": false}, {"lbl": "R18 v Trout Mouth", "f": 20, "a": 0, "fft": true}, {"lbl": "R19 v Crutch City", "f": 84, "a": 45, "fft": false}], "record": "7\u20131", "cc_ppg": 43.1, "cc_apg": 47.2, "wv_ppg": 66.4, "wv_apg": 44.3, "league_total": 109.5}, "oppstats": {"team": "Packing Heat", "players": [{"name": "Stephen Clarke", "gp": 9, "ppg": 6.0, "tpg": 1.6, "t3": 14, "pfg": 0.0, "high": 13, "l5": [0, 8, 7, 7, 3]}, {"name": "Adrian Chiali", "gp": 7, "ppg": 2.4, "tpg": 0.0, "t3": 0, "pfg": 2.1, "high": 5, "l5": [0, 4, 2, 4, 2]}, {"name": "Chris Smith", "gp": 12, "ppg": 9.5, "tpg": 0.2, "t3": 2, "pfg": 2.5, "high": 22, "l5": [8, 11, 6, 9, 10]}, {"name": "Daniel Chiali", "gp": 12, "ppg": 3.9, "tpg": 0.1, "t3": 1, "pfg": 1.8, "high": 13, "l5": [8, 0, 2, 0, 0]}, {"name": "Lee Proudman", "gp": 13, "ppg": 14.3, "tpg": 0.3, "t3": 4, "pfg": 1.4, "high": 24, "l5": [6, 16, 16, 24, 9]}, {"name": "Scott Proudman", "gp": 10, "ppg": 7.8, "tpg": 0.9, "t3": 9, "pfg": 1.4, "high": 15, "l5": [5, 10, 7, 15, 13]}, {"name": "Philip Roberts", "gp": 13, "ppg": 1.4, "tpg": 0.0, "t3": 0, "pfg": 0.4, "high": 7, "l5": [0, 0, 0, 0, 2]}, {"name": "Corey Borg", "gp": 8, "ppg": 5.8, "tpg": 0.0, "t3": 0, "pfg": 1.6, "high": 13, "l5": [5, 7, 4, 4, 8]}], "results": [{"rnd": "R4 v Kobe Ds", "f": 22, "a": 34}, {"rnd": "R5 v Thorndon", "f": 47, "a": 55}, {"rnd": "R8 v Rim Reapers", "f": 71, "a": 33}, {"rnd": "R9 v Trout Mouth", "f": 49, "a": 25}, {"rnd": "R10 v 67ers", "f": 48, "a": 62}, {"rnd": "R11 v Crutch City", "f": 38, "a": 44}, {"rnd": "R12 v Drunks", "f": 40, "a": 55}, {"rnd": "R13 v Rim Reapers", "f": 39, "a": 58}, {"rnd": "R15 v Drunks", "f": 26, "a": 85}, {"rnd": "R16 v Rim Reapers", "f": 41, "a": 34}, {"rnd": "R17 v Rim Reapers", "f": 44, "a": 32}, {"rnd": "R18 v Crutch City", "f": 56, "a": 38}, {"rnd": "R19 v Kobe Ds", "f": 39, "a": 58}], "forfeits": ["R6 v Drunks (forfeit loss)", "R7 v Muppets (forfeit loss)"], "bye": "R14", "ppg": 43.1, "apg": 47.2, "ppg_r12": 40.7, "apg_r12": 51.4, "l5f": 41.2, "l5a": 49.4, "rec": "5\u201310", "rec_r12": "3\u20134"}, "opps": [], "finals": {"R12 v The 67ers": {"W": 59, "C": 38, "p": {"Cody McInnes": [0, 0, 0], "Brae Rawnsley": [9, 0, 3], "Archer Schwarz": [7, 1, 1], "Zac Elliott": [19, 2, 3], "Jack Richardson": [0, 0, 0], "Thomas Riggall": [9, 1, 1], "Jai Sihota": [0, 0, 0], "Jack Devenish": [15, 2, 3], "Harry Van Essen": [0, 0, 1]}}, "R13 v Crutch City": {"W": 34, "C": 47, "p": {"Cody McInnes": [18, 2, 3], "Brae Rawnsley": [4, 0, 3], "Archer Schwarz": [0, 0, 1], "Zac Elliott": [5, 0, 3], "Jack Richardson": [0, 0, 0], "Thomas Riggall": [0, 0, 0], "Jai Sihota": [0, 0, 0], "Jack Devenish": [5, 1, 4], "Harry Van Essen": [2, 0, 0]}}, "R14 v Kobe Ds": {"W": 80, "C": 44, "p": {"Cody McInnes": [25, 3, 0], "Brae Rawnsley": [16, 0, 1], "Archer Schwarz": [0, 0, 0], "Zac Elliott": [17, 0, 0], "Jack Richardson": [6, 1, 1], "Thomas Riggall": [0, 0, 0], "Jai Sihota": [5, 1, 0], "Jack Devenish": [9, 3, 0], "Harry Van Essen": [2, 0, 1]}}, "R15 v Thorndon Bills": {"W": 59, "C": 56, "p": {"Cody McInnes": [20, 4, 1], "Brae Rawnsley": [18, 0, 3], "Archer Schwarz": [0, 0, 0], "Zac Elliott": [2, 0, 2], "Jack Richardson": [0, 0, 2], "Thomas Riggall": [0, 0, 0], "Jai Sihota": [5, 1, 1], "Jack Devenish": [12, 2, 2], "Harry Van Essen": [2, 0, 5]}}, "R16 v Adelaide University Thursday": {"W": 66, "C": 37, "p": {"Cody McInnes": [9, 0, 0], "Brae Rawnsley": [10, 0, 2], "Zac Elliott": [8, 0, 1], "Jack Richardson": [8, 0, 1], "Thomas Riggall": [2, 0, 0], "Jai Sihota": [0, 0, 1], "Jack Devenish": [22, 3, 0], "Harry Van Essen": [7, 1, 0]}}, "R17 v Muppets": {"W": 83, "C": 43, "p": {"Cody McInnes": [23, 1, 2], "Brae Rawnsley": [16, 0, 0], "Zac Elliott": [23, 1, 2], "Jack Richardson": [2, 0, 4], "Jai Sihota": [5, 1, 1], "Jack Devenish": [14, 4, 3]}}, "R19 v Crutch City": {"W": 84, "C": 45, "p": {"Cody McInnes": [29, 2, 1], "Brae Rawnsley": [19, 1, 2], "Zac Elliott": [16, 0, 3], "Jack Richardson": [0, 0, 0], "Jai Sihota": [4, 0, 0], "Jack Devenish": [12, 2, 1], "Harry Van Essen": [4, 0, 1]}}, "R18 v Trout Mouth": {"W": 20, "C": 0, "p": {}, "fft": true}}, "header": {"round": 20, "date": "Thu 19 Nov", "time": "6:10 PM", "venue": "Marden Basketball Centre \u00b7 Crt 2", "wv_rec": "7\u20131 \u00b7 +175", "op_rec": "5\u201310 \u00b7 \u221293", "out": ["Archer Schwarz", "Jack Devenish", "Zac Elliott"], "last": "Walkerville def. Crutch City 84\u201345 \u00b7 Packing Heat lost to Kobe Ds 39\u201358", "foot": "Prices are generated from Walkerville's box scores since R12 and Packing Heat's league games this season (forfeits excluded), from tmetriks.com/MBC. Small samples \u2014 this is a laugh, not a forecast. No real money, no real bets."}, "start_balance": 50, "built_at": "2026-11-18T13:55:38.681Z"};
+const ROUNDS = DATA.match.rounds_short;
+(function(){const H=DATA.header,s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+ s('hCrumb','Round '+H.round);s('hRound','ROUND '+H.round);s('hWhen',H.date+' · '+H.time);s('hVenue',H.venue);s('hWv',H.wv_rec);s('hOpp',DATA.opp_team);s('hOp',H.op_rec);
+ s('hLast','Last week: '+H.last);s('hFoot',H.foot);if(H.out.length)s('hOut','OUT: '+H.out.join(', '));else document.getElementById('hOutRow').style.display='none';
+ document.title='WalkerBet — '+DATA.opp_team+' v Walkerville (R'+H.round+')';})();
+const OPPT = DATA.opp_team;
+const $ = s=>document.querySelector(s);
+const fmt = n=>'$'+n.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fo = o=>o.toFixed(2);
+
+/* ---------- state ---------- */
+let state = {bal:DATA.start_balance, slip:[], bets:[], tab:'popular', round:DATA.round};
+const KEY='walkerbet_v3';
+let HIST=[];
+function loadHist(){try{HIST=JSON.parse(localStorage.getItem('walkerbet_history'))||[]}catch(e){HIST=[]}}
+function saveHist(){try{localStorage.setItem('walkerbet_history',JSON.stringify(HIST))}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({round:state.round,bal:state.bal,bets:state.bets}))}catch(e){}}
+function archive(b){if(b.status!=='open'&&!HIST.some(h=>h.id===b.id))HIST.push(JSON.parse(JSON.stringify(b)))}
+function autoSettle(){ // settles open bets against results published into the page after each game
+  let n=0,won=0;
+  state.bets.filter(b=>b.status==='open').forEach(b=>{const R=DATA.finals[b.round]; if(!R) return;
+    if(R.fft){b.status='void';state.bal+=b.stake;n++;return}
+    b.legRes={};let lost=false;b.legs.forEach(l=>{const r=judge(l.rule,R);b.legRes[l.id]=r;if(r===false)lost=true});
+    if(lost)b.status='lost';else{b.status='won';state.bal+=b.stake*b.odds;won+=b.stake*b.odds} n++;});
+  state.bets.forEach(archive); saveHist(); return {n,won};}
+let LOADMSG='';
+function load(){
+  let s=null; try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  if(!s){try{const o=JSON.parse(localStorage.getItem('walkerbet_r20b')); if(o) s={round:'R20 v Packing Heat',bal:o.bal,bets:(o.bets||[]).map(b=>Object.assign({round:'R20 v Packing Heat'},b))}}catch(e){}}
+  if(s){state.round=s.round;state.bal=s.bal;state.bets=s.bets||[];}
+  const r=autoSettle(); if(r.n) LOADMSG=`${r.n} bet${r.n>1?'s':''} settled — returned ${fmt(r.won)}. Check Results.`;
+  if(state.round!==DATA.round){ // new round: anything still open is voided, fresh balance
+    state.bets.filter(b=>b.status==='open').forEach(b=>{b.status='void';archive(b)}); saveHist();
+    state.bets=[]; state.bal=DATA.start_balance; state.round=DATA.round;
+    LOADMSG=(LOADMSG?LOADMSG+' ':'')+`New round — fresh ${fmt(DATA.start_balance)} loaded.`;}
+  save();}
+
+/* ---------- build selections ---------- */
+const SEL = {}; // id -> selection
+function addSel(s){SEL[s.id]=s;return s}
+const M = DATA.markets;
+const short = n=>{const [f,...l]=n.split(' ');return f[0]+'. '+l.join(' ')};
+function teamSels(){
+  const out={};
+  out.h2h = M.h2h.map((x,i)=>addSel({id:'h2h-'+i,mkt:'h2h',mname:'Head to Head',label:x.label,odds:x.odds,rule:{k:'h2h',team:i===0?'W':'C'}}));
+  const ln = parseFloat(M.line[0].label.split('-').pop()), fav=M.line_fav||'W', dog=fav==='W'?'C':'W';
+  out.line = M.line.map((x,i)=>addSel({id:'line-'+i,mkt:'line',mname:'Line',label:x.label,odds:x.odds,rule:{k:'line',team:i===0?fav:dog,fav,line:ln}}));
+  const tl = parseFloat(M.total[0].label.split(' ')[1]);
+  out.total = M.total.map((x,i)=>addSel({id:'tot-'+i,mkt:'total',mname:'Total Match Points',label:x.label,odds:x.odds,rule:{k:'total',over:i===0,line:tl}}));
+  const wl = parseFloat(M.wvtotal[0].label.split(' ')[1]);
+  out.wvtotal = M.wvtotal.map((x,i)=>addSel({id:'wvt-'+i,mkt:'wvtotal',mname:'Walkerville Total Points',label:x.label,odds:x.odds,rule:{k:'wvtotal',over:i===0,line:wl}}));
+  out.margin = M.margin.map((x,i)=>addSel({id:'mar-'+i,mkt:'margin',mname:'Winning Margin',label:x.label,odds:x.odds,rule:{k:'margin',lo:x.lo,hi:x.hi}}));
+  out.top = DATA.topscorer.map((x,i)=>addSel({id:'top-'+i,mkt:'top',mname:'Walkerville Top Points Scorer',label:x.name,odds:x.odds,rule:{k:'top',p:x.name}}));
+  return out;
+}
+const T = teamSels();
+const ALLP = DATA.players, PLAYERS = ALLP.filter(p=>!p.out);
+const pkey = n=>n.replace(/\W/g,'');
+function playerSels(stat){
+  const name={pts:'Points',['3pm']:'3-Pointers Made',pf:'Fouls'}[stat];
+  return PLAYERS.map(p=>({p,sels:p[stat].map((x,i)=>{
+    const k = x.line.startsWith('Foul out')?5:parseInt(x.line);
+    return addSel({id:`${stat}-${pkey(p.name)}-${i}`,mkt:`${stat}-${pkey(p.name)}`,mname:`${p.name} — ${name}`,
+      label:`${p.name} ${x.line.startsWith('Foul')?'to foul out (5 fouls)':k+'+ '+(stat==='pts'?'points':stat==='3pm'?'threes':'fouls')}`,
+      line:x.line,hit:x.hit,odds:x.odds,rule:{k:stat,p:p.name,n:k}})
+  })}));
+}
+const PS = {pts:playerSels('pts'),['3pm']:playerSels('3pm'),pf:playerSels('pf')};
+const STATN={pts:['Points','points',0],['3pm']:['3-Pointers Made','threes',1],pf:['Fouls','fouls',2]};
+const OU={};
+['pts','3pm','pf'].forEach(st=>{OU[st]=PLAYERS.map(p=>{const o=p.ou[st],k=pkey(p.name),mk=`ou-${st}-${k}`,mn=`${p.name} — ${STATN[st][0]} Over/Under`;
+  return {p,o,over:addSel({id:mk+'-o',mkt:mk,mname:mn,label:`${p.name} Over ${o.line} ${STATN[st][1]}`,odds:o.over,rule:{k:'ou',p:p.name,i:STATN[st][2],line:o.line,over:true}}),
+           under:addSel({id:mk+'-u',mkt:mk,mname:mn,label:`${p.name} Under ${o.line} ${STATN[st][1]}`,odds:o.under,rule:{k:'ou',p:p.name,i:STATN[st][2],line:o.line,over:false}})}})});
+
+/* ---------- opponent ---------- */
+const OPPS_P=[]; // opponent markets removed — stats only
+const OS=DATA.oppstats;
+function oppTab(){
+  const P=OS.players;
+  const byPts=[...P].sort((a,b)=>b.ppg-a.ppg), by3=[...P].filter(p=>p.t3>0).sort((a,b)=>b.tpg-a.tpg||b.t3-a.t3);
+  const kv=`<div class="kv"><div><b>${OS.rec}</b><small>Season record</small></div><div><b>${OS.ppg}</b><small>Pts for / game</small></div><div><b>${OS.apg}</b><small>Pts against / game</small></div>
+    <div><b>${OS.rec_r12}</b><small>Since R12</small></div><div><b>${OS.ppg_r12}</b><small>Pts for / game since R12</small></div><div><b>${OS.apg_r12}</b><small>Against / game since R12</small></div>
+    <div><b>${OS.l5f}</b><small>Pts for · last 5</small></div><div><b>${OS.l5a}</b><small>Against · last 5</small></div></div>`;
+  const scorers=byPts.map((p,i)=>`<div class="pcard"><div class="nm"><span>${i+1}. ${p.name}</span><span>${p.ppg} ppg</span></div><div class="gl">High <b>${p.high}</b> · ${p.gp} games · Last 5: <b>${p.l5.join(', ')}</b></div></div>`).join('');
+  const threes=`<div class="tblwrap"><table><tr><th>Player</th><th>Total 3s</th><th>3s / game</th><th>GP</th></tr>${by3.map(p=>`<tr><td>${p.name}</td><td>${p.t3}</td><td><b>${p.tpg}</b></td><td>${p.gp}</td></tr>`).join('')}</table></div>`;
+  const fouls=`<div class="tblwrap"><table><tr><th>Player</th><th>Fouls / game</th></tr>${[...P].sort((a,b)=>b.pfg-a.pfg).slice(0,4).map(p=>`<tr><td>${p.name}</td><td><b>${p.pfg}</b></td></tr>`).join('')}</table></div>`;
+  const res=`<div class="tblwrap"><table><tr><th>Game</th><th>For</th><th>Agst</th><th>Result</th></tr>${[...OS.results].reverse().map(g=>`<tr><td>${g.rnd}</td><td>${g.f}</td><td>${g.a}</td><td><span class="pill ${g.f>g.a?'pw':'pl'}">${g.f>g.a?'W':'L'} ${g.f>g.a?'+':''}${g.f-g.a}</span></td></tr>`).join('')}</table></div><div class="note" style="padding-top:8px">Also: ${OS.forfeits.join(', ')} · bye ${OS.bye}. Averages leave out forfeits.</div>`;
+  return mkt(`${OS.team} — team averages`,'',kv)+mkt('Top scorers','Season, games played',scorers)+mkt('Top 3-point shooters','',threes)+mkt('Most fouls','',fouls)+mkt('Results & scores','Most recent first',res);
+}
+/* ---------- render ---------- */
+const TABS=[['popular','Popular'],['lines','Game Lines'],['pts','Points'],['3pm','Threes'],['pf','Fouls'],['ou','Over/Under'],['top','Top Scorer'],['opp','Oppo Stats'],['form','Form'],['mybets','My Bets'],['results','Results']];
+function renderTabs(){
+  const open = state.bets.filter(b=>b.status==='open').length;
+  $('#tabs').innerHTML = TABS.map(([k,l])=>`<button data-tab="${k}" class="${state.tab===k?'on':''}">${l}${k==='mybets'&&open?`<span class="badge">${open}</span>`:''}</button>`).join('');
+}
+const isSel = id=>state.slip.includes(id);
+function obtn(s){return `<button class="ob ${isSel(s.id)?'sel':''}" data-sel="${s.id}"><span class="l">${s.label}</span><span class="o">${fo(s.odds)}</span></button>`}
+function mkt(title,info,body,closed){return `<div class="mkt ${closed?'closed':''}"><div class="mh"><h3>${title}</h3><span class="info">${info||''}</span><span class="chev">▾</span></div><div class="mb">${body}</div></div>`}
+const COLLAPSED=new Set();
+function ladderMarket(stat,title,maxOdds,players,only){
+  const rows = PS[stat].filter(r=>!players||players.includes(r.p.name)).map(({p,sels})=>{
+    const avg = stat==='pts'?p.avg.pts+' ppg':stat==='3pm'?p.avg['3pm']+' 3PM/g':p.avg.pf+' PF/g';
+    const btns = sels.filter(s=>s.odds<=maxOdds && (!only||only.includes(s.line))).map(s=>`<button class="lb ${isSel(s.id)?'sel':''}" data-sel="${s.id}"><div class="t">${s.line}</div><div class="o">${fo(s.odds)}</div><div class="h">${s.hit}</div></button>`).join('');
+    const ck=stat+'-'+pkey(p.name), cl=COLLAPSED.has(ck);
+    return `<div class="prow ${cl?'closed':''}"><div class="pname tog" data-pr="${ck}"><span class="pc">▾</span>${p.name}<small>${avg} · ${p.gp} games</small></div><div class="ladder">${btns||'<span class="note">No market</span>'}</div></div>`;
+  }).join('');
+  return mkt(title,`<span class="all" data-all="${stat}">Collapse/expand all</span>`,rows);
+}
+function ouMarket(st,players){
+  const rows=OU[st].filter(r=>!players||players.includes(r.p.name)).map(({p,o,over,under})=>`<div class="prow"><div class="pname">${p.name}<small>Avg ${p.avg[st]} · line ${o.line}</small></div><div class="grid2">
+    <button class="ob ${isSel(over.id)?'sel':''}" data-sel="${over.id}"><span class="l">Over ${o.line}<br><span class="h" style="font-size:10px;color:#9aa0b3">${o.ho} games</span></span><span class="o">${fo(over.odds)}</span></button>
+    <button class="ob ${isSel(under.id)?'sel':''}" data-sel="${under.id}"><span class="l">Under ${o.line}<br><span class="h" style="font-size:10px;color:#9aa0b3">${o.hu} games</span></span><span class="o">${fo(under.odds)}</span></button></div></div>`).join('');
+  return mkt(`Player ${STATN[st][0]} — Over/Under`,st==='pts'?'Main lines':'Line set at each player\'s average',rows);
+}
+function popular(){
+  const top4=[...PLAYERS].sort((a,b)=>b.avg.proj-a.avg.proj).slice(0,4).map(p=>p.name);
+  const shooters=[...PLAYERS].sort((a,b)=>b.avg['3pm']-a.avg['3pm']).slice(0,2).map(p=>p.name);
+  return mkt('Head to Head','',`<div class="grid2">${T.h2h.map(obtn).join('')}</div>`)+
+    mkt('Line','',`<div class="grid2">${T.line.map(obtn).join('')}</div>`)+
+    mkt('Total Match Points','',`<div class="grid2">${T.total.map(obtn).join('')}</div>`)+
+    ladderMarket('pts','Player Points — Featured',26,top4,['5+','10+','15+','20+','25+','30+'])+
+    ladderMarket('3pm','Player Threes — Shooters',26,shooters)+ouMarket('pts');
+}
+function lines(){
+  return mkt('Head to Head','',`<div class="grid2">${T.h2h.map(obtn).join('')}</div>`)+
+    mkt('Line','',`<div class="grid2">${T.line.map(obtn).join('')}</div>`)+
+    mkt('Total Match Points','WV '+DATA.match.wv_ppg+' + '+OPPT.split(' ').map(w=>w[0]).join('').toUpperCase()+' '+DATA.match.cc_ppg+' ppg = '+DATA.match.league_total,`<div class="grid2">${T.total.map(obtn).join('')}</div>`)+
+    mkt('Walkerville Total Points','Avg '+DATA.match.wv_ppg+' last '+DATA.match.wv_for.length+' games',`<div class="grid2">${T.wvtotal.map(obtn).join('')}</div>`)+
+    mkt('Winning Margin','',`<div class="grid3">${T.margin.map(obtn).join('')}</div>`);
+}
+function topTab(){return mkt('Walkerville Top Points Scorer','Ties paid in full',`<div class="grid3">${T.top.map(obtn).join('')}</div>`)}
+function form(){
+  const m=DATA.match;
+  const wv = m.results.map(g=>`<tr><td>${g.lbl}</td><td>${g.f}</td><td>${g.a}</td><td><span class="pill ${g.f>g.a?'pw':'pl'}">${g.f>g.a?'W':'L'} ${g.fft?'(forfeit)':(g.f>g.a?'+':'')+(g.f-g.a)}</span></td></tr>`).join('');
+  const stat=(k,idx)=>ALLP.map(p=>`<div class="pcard"><div class="nm"><span>${p.name}${p.out?' <span class="pill pl">OUT</span>':''}</span><span>Avg ${p.avg[k]}</span></div><div class="gl">${p.log.map((g,i)=>`${ROUNDS[i].split(' ')[0]} <b>${g?g[idx]:'–'}</b>`).join(' · ')}</div></div>`).join('');
+  const kv=`<div class="kv"><div><b>${m.record}</b><small>Record since R12</small></div><div><b>${m.wv_ppg}</b><small>Pts for / game</small></div><div><b>${m.wv_apg}</b><small>Pts against / game</small></div><div><b>${m.cc_ppg}</b><small>${OPPT} pts / game</small></div><div><b>${m.cc_apg}</b><small>${OPPT} conceded / game</small></div></div>`;
+  return mkt('Team form',"",kv+`<div class="tblwrap"><table><tr><th>Game</th><th>For</th><th>Agst</th><th>Result</th></tr>${wv}</table></div>`)+
+    mkt('Points by game','',stat('pts',0))+mkt('3-pointers by game','',stat('3pm',1))+mkt('Fouls by game','',stat('pf',2))+
+    `<div class="note">Blank (–) = not on the box score that week. Forfeits have no stats.</div>`;
+}
+function mybets(){
+  const list = state.bets.slice().reverse().map(b=>{
+    const pill = b.status==='open'?'<span class="pill po">OPEN</span>':b.status==='won'?'<span class="pill pw">WON '+fmt(b.stake*b.odds)+'</span>':b.status==='void'?'<span class="pill po">VOID</span>':'<span class="pill pl">LOST</span>';
+    return `<div class="bet"><div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${fo(b.odds)}</span>${pill}</div>${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}<div class="top2" style="margin:6px 0 0"><span>Potential return</span><b style="color:var(--ink)">${fmt(b.stake*b.odds)}</b></div></div>`;
+  }).join('') || '<div class="empty">No bets placed yet.</div>';
+  return mkt('My Bets',DATA.round,list)+`<div class="note">Bets settle automatically — results are added after each game (Thursday ~11:30pm). Open WalkerBet after that and your winnings land; settled bets move to Results.</div>`;
+}
+function betCard(b){
+  const pill = b.status==='open'?'<span class="pill po">OPEN</span>':b.status==='won'?'<span class="pill pw">WON '+fmt(b.stake*b.odds)+'</span>':b.status==='void'?'<span class="pill po">VOID</span>':'<span class="pill pl">LOST</span>';
+  return `<div class="bet"><div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${fo(b.odds)}</span>${pill}</div>${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}</div>`;}
+function resultsTab(){
+  if(!HIST.length) return mkt('Results','','<div class="empty">No settled bets yet. Bets land here once the result is added (Thursday ~11:30pm) and stay here week to week.</div>');
+  const st=HIST.reduce((a,b)=>a+b.stake,0), ret=HIST.reduce((a,b)=>a+(b.status==='won'?b.stake*b.odds:b.status==='void'?b.stake:0),0), w=HIST.filter(b=>b.status==='won').length, dec=HIST.filter(b=>b.status!=='void').length||1;
+  const best=HIST.filter(b=>b.status==='won').sort((a,b)=>b.stake*b.odds-a.stake*a.odds)[0];
+  const sum=`<div class="sumgrid"><div><b>${HIST.length}</b><small>Bets</small></div><div><b>${w}</b><small>Won</small></div><div><b>${Math.round(w/dec*100)}%</b><small>Strike rate</small></div>
+    <div><b>${fmt(st)}</b><small>Staked</small></div><div><b>${fmt(ret)}</b><small>Returned</small></div><div><b style="color:${ret-st>=0?'var(--win)':'var(--loss)'}">${ret-st>=0?'+':'−'}${fmt(Math.abs(ret-st))}</b><small>Profit</small></div></div>
+    ${best?`<div class="note">🏆 Best collect: ${fmt(best.stake*best.odds)} on a ${best.type.toLowerCase()} (${best.round})</div>`:''}`;
+  const rounds=[...new Set(HIST.map(b=>b.round))].reverse();
+  const list=rounds.map(r=>{const bs=HIST.filter(b=>b.round===r);const p=bs.reduce((a,b)=>a+(b.status==='won'?b.stake*b.odds:b.status==='void'?b.stake:0)-b.stake,0);
+    return `<div class="rhead"><span>${r}</span><span style="color:${p>=0?'var(--win)':'var(--loss)'}">${p>=0?'+':'−'}${fmt(Math.abs(p))}</span></div>`+bs.slice().reverse().map(betCard).join('')}).join('');
+  return mkt('Your record','All weeks',sum)+mkt('Previous bets','Newest first',list)+`<div style="text-align:center;margin:10px 0"><button class="btn alt" id="clearHist">Clear history</button></div>`;
+}
+function renderMarkets(){
+  const t=state.tab;
+  $('#markets').innerHTML = t==='popular'?popular():t==='lines'?lines():t==='pts'?ladderMarket('pts','Player Points',81)+'':t==='3pm'?ladderMarket('3pm','Player 3-Pointers Made',30):t==='pf'?ladderMarket('pf','Player Fouls',30):t==='ou'?ouMarket('pts')+ouMarket('3pm')+ouMarket('pf'):t==='opp'?oppTab():t==='top'?topTab():t==='form'?form():t==='results'?resultsTab():mybets();
+}
+/* ---------- slip ---------- */
+/* ---------- Same Game Multi pricing ----------
+   Like real books: (1) start from the straight multiplied price, (2) cut it for every pair of legs
+   that tend to win together (correlation), (3) take an extra SGM margin that compounds per leg,
+   (4) block combos that contradict each other or double up on the same thing. */
+const SGM_LEG_MARGIN=0.94, SGM_MAX_CUT=0.5;
+function legInfo(id){const r=SEL[id].rule,d=x=>x?1:-1;
+  switch(r.k){
+    case 'h2h': return {c:'res',k:'h2h',side:r.team};
+    case 'line': return {c:'res',k:'line',side:r.team,fav:(r.team===(r.fav||'W')),line:r.line};
+    case 'margin': return {c:'res',k:'margin',side:r.lo>0?'W':'C',lo:r.lo};
+    case 'total': return {c:'tot',dir:d(r.over)};
+    case 'wvtotal': return {c:'wvt',dir:d(r.over)};
+    case 'pts': case '3pm': case 'pf': return {c:'pl',side:'W',p:r.p,st:r.k,dir:1};
+    case 'ou': return {c:'pl',side:'W',p:r.p,st:['pts','3pm','pf'][r.i],dir:d(r.over)};
+    case 'opp': return {c:'pl',side:'C',p:r.p,st:r.st,dir:d(r.over)};
+    case 'top': return {c:'top',p:r.p};
+  }return {c:'x'}}
+const scoring=x=>x.c==='pl'&&(x.st==='pts'||x.st==='3pm');
+function pair(a,b){ // returns factor, or a string = reason it's blocked
+  if(a.c==='res'&&b.c==='res'){
+    if(a.side===b.side) return 0.80;
+    const no='Those results can\'t both happen';
+    if(a.k!=='line'&&b.k!=='line') return no;
+    for(const [l,o] of [[a,b],[b,a]]){ if(l.k!=='line') continue;
+      if(l.fav&&o.k!=='line') return no;                                   // favourite covering + other side winning
+      if(!l.fav&&o.k==='margin'&&Math.min(Math.abs(o.lo),Math.abs(o.hi))>l.line) return no; }
+    return 1;}
+  for(const [x,y] of [[a,b],[b,a]]){
+    if(x.c==='res'&&y.c==='wvt') return (x.side==='W')===(y.dir>0)?0.85:1;
+    if(x.c==='res'&&scoring(y)&&y.dir>0&&x.side===y.side) return 0.90;
+    if(x.c==='tot'&&y.c==='wvt') return x.dir===y.dir?0.80:1;
+    if(x.c==='tot'&&scoring(y)) return x.dir===y.dir?0.92:1;
+    if(x.c==='wvt'&&scoring(y)&&y.side==='W') return x.dir===y.dir?0.88:1;
+    if(x.c==='top'&&y.c==='pl'&&y.p===x.p&&y.st==='pts'&&y.dir>0) return 0.80;
+    if(x.c==='top'&&y.c==='res'&&y.side==='W') return 0.95;
+  }
+  if(a.c==='pl'&&b.c==='pl'){
+    if(a.p===b.p&&a.st===b.st) return 'Same player, same stat — pick one line';
+    if(a.p===b.p&&scoring(a)&&scoring(b)&&a.dir===b.dir) return 0.85;
+    if(a.side===b.side&&a.st==='pts'&&b.st==='pts'&&a.dir===b.dir) return 0.95;
+  }
+  if(a.c==='top'&&b.c==='top') return 'Only one top scorer';
+  return 1;}
+function sgm(){const ids=state.slip,n=ids.length;
+  if(n<2) return {ok:false};
+  const ms=ids.map(id=>SEL[id].mkt); if(new Set(ms).size!==n) return {ok:false,why:'Two picks from the same market — remove one'};
+  const L=ids.map(legInfo); let corr=1;
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const f=pair(L[i],L[j]); if(typeof f==='string') return {ok:false,why:f};}
+  // each extra leg is cut by its strongest link to any other leg (not every pair stacked)
+  const strongest=L.map((x,i)=>Math.min(1,...L.map((y,j)=>i===j?1:pair(x,y))));
+  strongest.sort((p,q)=>p-q); strongest.slice(0,n-1).forEach(f=>corr*=f);
+  const straight=ids.reduce((a,id)=>a*SEL[id].odds,1);
+  const longest=Math.max(...ids.map(id=>SEL[id].odds));
+  let price=straight*corr*Math.pow(SGM_LEG_MARGIN,n-1);
+  price=Math.max(price,straight*(1-SGM_MAX_CUT),longest); price=Math.floor(price*100)/100;
+  return {ok:true,straight,price,cut:1-price/straight};}
+function canMulti(){return sgm().ok}
+function multiOdds(){return sgm().price}
+let stakes={};
+function renderSlip(){
+  $('#slipCnt').textContent=$('#fabCnt').textContent=state.slip.length;
+  if(!state.slip.length){$('#sbody').innerHTML='<div class="empty">Tap any price to add it to your slip.<br><br>Combine 2+ from different markets for a multi.</div>';$('#sfoot').innerHTML='';return}
+  let h = state.slip.map(id=>{const s=SEL[id];return `<div class="leg"><div class="r1"><div style="flex:1"><div class="sn">${s.label}</div><div class="mk">${s.mname}</div></div><span class="od">${fo(s.odds)}</span><button class="x" data-rm="${id}">✕</button></div>
+   <div class="stake"><input type="number" min="0" step="1" placeholder="Stake" data-stake="${id}" value="${stakes[id]||''}"><div class="ret">Return<b>${fmt((stakes[id]||0)*s.odds)}</b></div></div></div>`}).join('');
+  if(state.slip.length>1){
+    const g=sgm(), ok=g.ok;
+    h += `<div class="leg multi"><div class="r1"><div style="flex:1"><div class="sn">${state.slip.length}-Leg Same Game Multi</div><div class="mk">${ok?`All legs must win · normal multi <s>${fo(g.straight)}</s> · SGM adjusted −${Math.round(g.cut*100)}%`:g.why}</div></div><span class="od">${ok?fo(g.price):'—'}</span></div>
+    ${ok?`<div class="stake"><input type="number" min="0" step="1" placeholder="Stake" data-stake="multi" value="${stakes.multi||''}"><div class="ret">Return<b>${fmt((stakes.multi||0)*multiOdds())}</b></div></div><div class="quick">${[1,2,5,10].map(v=>`<button data-q="${v}">+$${v}</button>`).join('')}</div>`:''}</div>`;
+  }
+  $('#sbody').innerHTML=h;
+  renderFoot();
+}
+function totalStake(){let t=0;state.slip.forEach(id=>t+=+stakes[id]||0);if(canMulti())t+=+stakes.multi||0;return t}
+function renderFoot(){
+  const t=totalStake();
+  let ret=0;state.slip.forEach(id=>ret+=(+stakes[id]||0)*SEL[id].odds);if(canMulti())ret+=(+stakes.multi||0)*multiOdds();
+  $('#sfoot').innerHTML=`<div class="tot"><span>Total stake</span><b>${fmt(t)}</b></div><div class="tot"><span>Potential return</span><b>${fmt(ret)}</b></div><button class="place" id="placeBtn" ${t<=0||t>state.bal?'disabled':''}>${t>state.bal?'Not enough fun bucks':'Place Bet'+(t>0?' '+fmt(t):'')}</button>`;
+}
+function toggle(id){
+  const s=SEL[id];
+  if(isSel(id)) state.slip=state.slip.filter(x=>x!==id);
+  else { state.slip=state.slip.filter(x=>!(SEL[x].mkt===s.mkt && s.mkt.match(/^(pts|3pm|pf|ou|opp)-/))); state.slip.push(id); }
+  renderAll();
+}
+function place(){
+  const t=totalStake(); if(t<=0||t>state.bal) return;
+  const now=new Date().toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
+  state.slip.forEach(id=>{const st=+stakes[id]||0;if(st>0)state.bets.push({id:Date.now()+id,round:DATA.round,type:'Single',stake:st,odds:SEL[id].odds,legs:[legOf(id)],status:'open',at:now})});
+  if(canMulti()&&(+stakes.multi||0)>0) state.bets.push({id:Date.now()+'m',round:DATA.round,type:state.slip.length+'-Leg SGM',stake:+stakes.multi,odds:+multiOdds().toFixed(2),legs:state.slip.map(legOf),status:'open',at:now});
+  state.bal-=t; state.slip=[]; stakes={}; save(); toast('Bet placed! Good luck 🏀'); closeSlip(); renderAll();
+}
+const legOf=id=>({id,label:SEL[id].label,odds:SEL[id].odds,rule:SEL[id].rule});
+/* ---------- settle ---------- */
+function judge(rule,R){
+  const W=R.W,C=R.C,diff=W-C;
+  switch(rule.k){
+    case 'h2h': return rule.team==='W'?diff>0:diff<0;
+    case 'line': {const fav=rule.fav||'W',fd=fav==='W'?diff:-diff;return rule.team===fav?fd>rule.line:fd<rule.line}
+    case 'total': return rule.over?(W+C)>rule.line:(W+C)<rule.line;
+    case 'wvtotal': return rule.over?W>rule.line:W<rule.line;
+    case 'margin': return diff>=rule.lo && diff<=rule.hi;
+    case 'top': {const mx=Math.max(0,...Object.values(R.p).map(v=>v[0]||0));return ((R.p[rule.p]||[0])[0]||0)===mx && mx>0}
+    case 'ou': {const v=(R.p[rule.p]||[])[rule.i]||0;return rule.over?v>rule.line:v<rule.line}
+    case 'pts': return ((R.p[rule.p]||[])[0]||0)>=rule.n;
+    case '3pm': return ((R.p[rule.p]||[])[1]||0)>=rule.n;
+    case 'pf': return ((R.p[rule.p]||[])[2]||0)>=rule.n;
+  }
+}
+/* ---------- misc ---------- */
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200)}
+function openSlip(){$('#slip').classList.add('open')} function closeSlip(){$('#slip').classList.remove('open')}
+function renderAll(){$('#bal').textContent=fmt(state.bal);renderTabs();renderMarkets();renderSlip()}
+document.addEventListener('click',e=>{
+  const sel=e.target.closest('[data-sel]'); if(sel){toggle(sel.dataset.sel);return}
+  const tab=e.target.closest('[data-tab]'); if(tab){state.tab=tab.dataset.tab;renderAll();return}
+  const all=e.target.closest('[data-all]'); if(all){const st=all.dataset.all,keys=PLAYERS.map(p=>st+'-'+pkey(p.name)),anyOpen=keys.some(k=>!COLLAPSED.has(k));keys.forEach(k=>anyOpen?COLLAPSED.add(k):COLLAPSED.delete(k));renderMarkets();return}
+  const pr=e.target.closest('[data-pr]'); if(pr){const k=pr.dataset.pr;COLLAPSED.has(k)?COLLAPSED.delete(k):COLLAPSED.add(k);pr.parentElement.classList.toggle('closed');return}
+  const mh=e.target.closest('.mh'); if(mh){const card=mh.parentElement;card.classList.toggle('closed');const k=card.dataset.oppk;if(k){card.classList.contains('closed')?COLLAPSED.add(k):COLLAPSED.delete(k)}return}
+  const rm=e.target.closest('[data-rm]'); if(rm){state.slip=state.slip.filter(x=>x!==rm.dataset.rm);delete stakes[rm.dataset.rm];renderAll();return}
+  const q=e.target.closest('[data-q]'); if(q){stakes.multi=(+stakes.multi||0)+ +q.dataset.q;renderSlip();return}
+  if(e.target.id==='placeBtn')place();
+  if(e.target.id==='clearSlip'){state.slip=[];stakes={};renderAll()}
+  if(e.target.id==='closeSlip')closeSlip();
+  if(e.target.closest('#fab'))openSlip();
+  if(e.target.id==='clearHist'){if(e.target.dataset.c){HIST=[];saveHist();renderAll();toast('History cleared')}else{e.target.dataset.c=1;e.target.textContent='Tap again to clear'}}
+  if(e.target.id==='resetBtn'){if(e.target.dataset.c){state={bal:DATA.start_balance,slip:[],bets:[],tab:'popular',round:DATA.round};stakes={};save();renderAll();toast('Fresh '+fmt(DATA.start_balance)+' loaded');delete e.target.dataset.c;e.target.textContent='Reset'}else{e.target.dataset.c=1;e.target.textContent='Tap again to reset';setTimeout(()=>{if(e.target.dataset.c){delete e.target.dataset.c;e.target.textContent='Reset'}},3000)}}
+});
+document.addEventListener('input',e=>{
+  const k=e.target.dataset.stake; if(!k)return;
+  stakes[k]=e.target.value;
+  const s=k==='multi'?multiOdds():SEL[k].odds;
+  e.target.parentElement.querySelector('.ret b').textContent=fmt((+e.target.value||0)*s);
+  renderFoot();
+});
+loadHist(); load(); renderAll(); if(LOADMSG) setTimeout(()=>toast(LOADMSG),400);
+</script>
+</body>
+</html>

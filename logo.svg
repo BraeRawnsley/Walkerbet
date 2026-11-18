@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0f2557"/>
+  <!-- shield -->
+  <path d="M256 24 L440 76 L428 270 Q412 360 256 420 Q100 360 84 270 L72 76 Z" fill="#14306b" stroke="#ffffff" stroke-width="10" stroke-linejoin="round"/>
+  <g transform="translate(256 214)">
+    <!-- head -->
+    <path d="M-132 -30 L-120 -146 L-56 -100 Q0 -116 56 -100 L120 -146 L132 -30 Q140 58 84 112 L36 146 Q0 158 -36 146 L-84 112 Q-140 58 -132 -30 Z" fill="#ffffff"/>
+    <!-- ears -->
+    <path d="M-110 -124 L-102 -66 L-70 -92 Z" fill="#14306b"/>
+    <path d="M110 -124 L102 -66 L70 -92 Z" fill="#14306b"/>
+    <!-- angry brow ridge -->
+    <path d="M-112 -52 L-20 -22 L-28 -8 L-110 -34 Z" fill="#14306b"/>
+    <path d="M112 -52 L20 -22 L28 -8 L110 -34 Z" fill="#14306b"/>
+    <!-- eyes: narrow, yellow -->
+    <path d="M-96 -22 L-34 -4 Q-62 10 -92 -6 Z" fill="#ffffff" stroke="#14306b" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M96 -22 L34 -4 Q62 10 92 -6 Z" fill="#ffffff" stroke="#14306b" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M-58 -10 L-54 6 L-50 -8 Z" fill="#0f2557"/>
+    <path d="M58 -10 L54 6 L50 -8 Z" fill="#0f2557"/>
+    <!-- snout wrinkles -->
+    <path d="M-14 -16 L-20 20 M14 -16 L20 20" stroke="#14306b" stroke-width="6" stroke-linecap="round"/>
+    <!-- nose -->
+    <path d="M-26 24 L26 24 L0 48 Z" fill="#14306b"/>
+    <!-- roaring mouth -->
+    <path d="M-64 62 Q0 46 64 62 L48 124 Q0 146 -48 124 Z" fill="#0f2557"/>
+    <!-- fangs -->
+    <path d="M-48 62 L-38 100 L-28 58 Z" fill="#ffffff"/>
+    <path d="M48 62 L38 100 L28 58 Z" fill="#ffffff"/>
+    <path d="M-40 126 L-32 102 L-22 130 Z" fill="#ffffff"/>
+    <path d="M40 126 L32 102 L22 130 Z" fill="#ffffff"/>
+    <!-- tongue -->
+    <path d="M-20 122 Q0 104 20 122 Q0 136 -20 122 Z" fill="#c23a4a"/>
+    <!-- cheek stripes -->
+    <path d="M-130 26 L-80 40 L-126 52 Z" fill="#14306b"/>
+    <path d="M130 26 L80 40 L126 52 Z" fill="#14306b"/>
+    <path d="M-120 70 L-78 72 L-110 88 Z" fill="#14306b"/>
+    <path d="M120 70 L78 72 L110 88 Z" fill="#14306b"/>
+  </g>
+  <text x="62" y="490" text-anchor="start" font-family="DejaVu Sans, Arial Black, sans-serif" font-weight="900" font-style="italic" font-size="58"><tspan fill="#ffffff">WALKER</tspan><tspan fill="#f5c400">BET</tspan></text>
+</svg>
