@@ -100,6 +100,15 @@ button{font-family:inherit;cursor:pointer}
 .place{width:100%;border:0;border-radius:8px;background:var(--acc);color:var(--accInk);font-weight:800;font-size:15px;padding:13px;margin-top:8px}
 .place:disabled{opacity:.45;cursor:not-allowed}
 .place.alt{background:#eef0f5;color:var(--ink)}
+.promos{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.promo{border:1.5px dashed #c9c4ef;background:#fff;border-radius:8px;padding:6px 8px;text-align:left;display:flex;flex-direction:column;gap:1px;line-height:1.2}
+.promo b{font-size:11.5px;color:var(--brand)}
+.promo span{font-size:10.5px;color:var(--muted)}
+.promo small{font-size:10px;color:var(--muted);font-weight:600}
+.promo.on{border-style:solid;border-color:var(--brand);background:#eef0ff}
+.promo.on small{color:var(--win)}
+.promo:disabled{opacity:.4}
+s.was{color:#9aa0b3;font-weight:500;margin-right:3px}
 .confirm{background:#fffbe6;border:1px solid #f5d76e;border-radius:8px;padding:10px;margin-bottom:6px;font-size:13px}
 .confirm .cl{font-size:12px;color:var(--ink);padding:3px 0;border-bottom:1px dashed #eadf9f}
 .quick{display:flex;gap:4px;margin-top:6px}
@@ -238,25 +247,28 @@ const fmt = n=>'$'+n.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFrac
 const fo = o=>o.toFixed(2);
 
 /* ---------- state ---------- */
-let state = {bal:DATA.start_balance, slip:[], bets:[], tab:'popular', round:DATA.round};
+const PROMO_START={boost:3,second:2};
+let state = {bal:DATA.start_balance, slip:[], bets:[], tab:'popular', round:DATA.round, promos:{...PROMO_START}};
+let PROMO_SEL={boost:false,second:false};
 const KEY='walkerbet_v3';
 let HIST=[];
 function loadHist(){try{HIST=JSON.parse(localStorage.getItem('walkerbet_history'))||[]}catch(e){HIST=[]}}
 function saveHist(){try{localStorage.setItem('walkerbet_history',JSON.stringify(HIST))}catch(e){}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify({round:state.round,bal:state.bal,bets:state.bets,start:DATA.start_balance,reset:DATA.reset_id||''}))}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({round:state.round,bal:state.bal,bets:state.bets,promos:state.promos,start:DATA.start_balance,reset:DATA.reset_id||''}))}catch(e){}}
 function archive(b){if(b.status!=='open'&&!HIST.some(h=>h.id===b.id))HIST.push(JSON.parse(JSON.stringify(b)))}
 function autoSettle(){ // settles open bets against results published into the page after each game
   let n=0,won=0;
   state.bets.filter(b=>b.status==='open').forEach(b=>{const R=DATA.finals[b.round]; if(!R) return;
     if(R.fft){b.status='void';state.bal+=b.stake;n++;return}
-    b.legRes={};let lost=false;b.legs.forEach(l=>{const r=judge(l.rule,R);b.legRes[l.id]=r;if(r===false)lost=true});
+    b.legRes={};let lost=false,misses=0;b.legs.forEach(l=>{const r=judge(l.rule,R);b.legRes[l.id]=r;if(r===false){lost=true;misses++}});
+    if(lost&&b.second&&misses===1){b.scRefund=Math.round(b.stake*25)/100;state.bal+=b.scRefund;won+=b.scRefund}
     if(lost)b.status='lost';else{b.status='won';state.bal+=b.stake*b.odds;won+=b.stake*b.odds} n++;});
   state.bets.forEach(archive); saveHist(); return {n,won};}
 let LOADMSG='';
 function load(){
   let s=null; try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
   if(!s){try{const o=JSON.parse(localStorage.getItem('walkerbet_r20b')); if(o) s={round:'R20 v Packing Heat',bal:o.bal,bets:(o.bets||[]).map(b=>Object.assign({round:'R20 v Packing Heat'},b))}}catch(e){}}
-  if(s){state.round=s.round;state.bal=s.bal;state.bets=s.bets||[];
+  if(s){state.round=s.round;state.bal=s.bal;state.bets=s.bets||[];state.promos=s.promos||{...PROMO_START};
     const was=s.start||50; if(was!==DATA.start_balance){state.bal+=DATA.start_balance-was; LOADMSG=`Starting balance is now ${fmt(DATA.start_balance)} — you've been topped up.`;}}
   const r=autoSettle(); if(r.n) LOADMSG=`${r.n} bet${r.n>1?'s':''} settled — returned ${fmt(r.won)}. Check Results.`;
   if(state.round!==DATA.round){ // new round: balance carries over; any bet with no result is voided and refunded
@@ -264,7 +276,7 @@ function load(){
     state.bets=[]; state.round=DATA.round;
     LOADMSG=(LOADMSG?LOADMSG+' ':'')+`New round is up — your balance is ${fmt(state.bal)}.`;}
   if(s && DATA.reset_id && (s.reset||'')!==DATA.reset_id){ // only when Brae orders a balance reset
-    state.bal=DATA.start_balance; LOADMSG=`Balances have been reset — everyone's back to ${fmt(DATA.start_balance)}.`;}
+    state.bal=DATA.start_balance; state.promos={...PROMO_START}; LOADMSG=`Balances have been reset — everyone's back to ${fmt(DATA.start_balance)}.`;}
   save();}
 
 /* ---------- build selections ---------- */
@@ -373,22 +385,22 @@ function form(){
 function mybets(){
   const list = state.bets.slice().reverse().map(b=>{
     const pill = b.status==='open'?'<span class="pill po">OPEN</span>':b.status==='won'?'<span class="pill pw">WON '+fmt(b.stake*b.odds)+'</span>':b.status==='void'?'<span class="pill po">VOID</span>':'<span class="pill pl">LOST</span>';
-    return `<div class="bet"><div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${fo(b.odds)}</span>${pill}</div>${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}<div class="top2" style="margin:6px 0 0"><span>Potential return</span><b style="color:var(--ink)">${fmt(b.stake*b.odds)}</b></div></div>`;
+    return `<div class="bet"><div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span>${pill}</div>${b.scRefund?`<div class="note" style="padding:0 0 4px;color:var(--win)">🔁 Second Chance: ${fmt(b.scRefund)} back</div>`:''}${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}<div class="top2" style="margin:6px 0 0"><span>Potential return</span><b style="color:var(--ink)">${fmt(b.stake*b.odds)}</b></div></div>`;
   }).join('') || '<div class="empty">No bets placed yet.</div>';
   return mkt('My Bets',DATA.round,list)+`<div class="note">Bets settle automatically — results are added after each game (Thursday ~11:30pm). Open WalkerBet after that and your winnings land; settled bets move to Results.</div>`;
 }
 function betCard(b){
   const pill = b.status==='open'?'<span class="pill po">OPEN</span>':b.status==='won'?'<span class="pill pw">WON '+fmt(b.stake*b.odds)+'</span>':b.status==='void'?'<span class="pill po">VOID</span>':'<span class="pill pl">LOST</span>';
-  return `<div class="bet"><div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${fo(b.odds)}</span>${pill}</div>${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}</div>`;}
+  return `<div class="bet"><div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span>${pill}</div>${b.scRefund?`<div class="note" style="padding:0 0 4px;color:var(--win)">🔁 Second Chance: ${fmt(b.scRefund)} back</div>`:''}${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}</div>`;}
 function resultsTab(){
   if(!HIST.length) return mkt('Results','','<div class="empty">No settled bets yet. Bets land here once the result is added (Thursday ~11:30pm) and stay here week to week.</div>');
-  const st=HIST.reduce((a,b)=>a+b.stake,0), ret=HIST.reduce((a,b)=>a+(b.status==='won'?b.stake*b.odds:b.status==='void'?b.stake:0),0), w=HIST.filter(b=>b.status==='won').length, dec=HIST.filter(b=>b.status!=='void').length||1;
+  const st=HIST.reduce((a,b)=>a+b.stake,0), ret=HIST.reduce((a,b)=>a+(b.status==='won'?b.stake*b.odds:b.status==='void'?b.stake:0)+(b.scRefund||0),0), w=HIST.filter(b=>b.status==='won').length, dec=HIST.filter(b=>b.status!=='void').length||1;
   const best=HIST.filter(b=>b.status==='won').sort((a,b)=>b.stake*b.odds-a.stake*a.odds)[0];
   const sum=`<div class="sumgrid"><div><b>${HIST.length}</b><small>Bets</small></div><div><b>${w}</b><small>Won</small></div><div><b>${Math.round(w/dec*100)}%</b><small>Strike rate</small></div>
     <div><b>${fmt(st)}</b><small>Staked</small></div><div><b>${fmt(ret)}</b><small>Returned</small></div><div><b style="color:${ret-st>=0?'var(--win)':'var(--loss)'}">${ret-st>=0?'+':'−'}${fmt(Math.abs(ret-st))}</b><small>Profit</small></div></div>
     ${best?`<div class="note">🏆 Best collect: ${fmt(best.stake*best.odds)} on a ${best.type.toLowerCase()} (${best.round})</div>`:''}`;
   const rounds=[...new Set(HIST.map(b=>b.round))].reverse();
-  const list=rounds.map(r=>{const bs=HIST.filter(b=>b.round===r);const p=bs.reduce((a,b)=>a+(b.status==='won'?b.stake*b.odds:b.status==='void'?b.stake:0)-b.stake,0);
+  const list=rounds.map(r=>{const bs=HIST.filter(b=>b.round===r);const p=bs.reduce((a,b)=>a+(b.status==='won'?b.stake*b.odds:b.status==='void'?b.stake:0)+(b.scRefund||0)-b.stake,0);
     return `<div class="rhead"><span>${r}</span><span style="color:${p>=0?'var(--win)':'var(--loss)'}">${p>=0?'+':'−'}${fmt(Math.abs(p))}</span></div>`+bs.slice().reverse().map(betCard).join('')}).join('');
   return mkt('Your record','All weeks',sum)+mkt('Previous bets','Newest first',list)+`<div style="text-align:center;margin:10px 0"><button class="btn alt" id="clearHist">Clear history</button></div>`;
 }
@@ -454,17 +466,23 @@ function sgm(){const ids=state.slip,n=ids.length;
   price=Math.max(price,straight*(1-SGM_MAX_CUT),longest); price=Math.floor(price*100)/100;
   return {ok:true,straight,price,cut:1-price/straight};}
 function canMulti(){return sgm().ok}
-function multiOdds(){return sgm().price}
+function baseMultiOdds(){return sgm().price}
+function multiOdds(){const p=baseMultiOdds();return PROMO_SEL.boost?Math.round(p*1.05*100)/100:p}
+function promoBox(){
+  const P=state.promos||{boost:0,second:0};
+  const chip=(k,title,desc,left)=>`<button class="promo ${PROMO_SEL[k]?'on':''}" data-promo="${k}" ${left<=0&&!PROMO_SEL[k]?'disabled':''}><b>${title}</b><span>${desc}</span><small>${PROMO_SEL[k]?'Applied ✓':left+' left'}</small></button>`;
+  return `<div class="promos">${chip('boost','⚡ Walky Time Bet BOOST','Boosts your payout by 5%',P.boost)}${chip('second','🔁 Second Chance','25% back if one leg misses',P.second)}</div>`;}
 let stakes={};
 function renderSlip(){
+  if(!canMulti())PROMO_SEL={boost:false,second:false};
   $('#slipCnt').textContent=$('#fabCnt').textContent=state.slip.length;
   if(!state.slip.length){$('#sbody').innerHTML='<div class="empty">Tap any price to add it to your slip.<br><br>Combine 2+ from different markets for a multi.</div>';$('#sfoot').innerHTML='';return}
   let h = state.slip.map(id=>{const s=SEL[id];return `<div class="leg"><div class="r1"><div style="flex:1"><div class="sn">${s.label}</div><div class="mk">${s.mname}</div></div><span class="od">${fo(s.odds)}</span><button class="x" data-rm="${id}">✕</button></div>
    <div class="stake"><input type="number" min="0" step="1" placeholder="Stake" data-stake="${id}" value="${stakes[id]||''}"><div class="ret">Return<b>${fmt((stakes[id]||0)*s.odds)}</b></div></div></div>`}).join('');
   if(state.slip.length>1){
     const g=sgm(), ok=g.ok;
-    h += `<div class="leg multi"><div class="r1"><div style="flex:1"><div class="sn">${state.slip.length}-Leg Same Game Multi</div><div class="mk">${ok?'All legs must win':g.why}</div></div><span class="od">${ok?fo(g.price):'—'}</span></div>
-    ${ok?`<div class="stake"><input type="number" min="0" step="1" placeholder="Stake" data-stake="multi" value="${stakes.multi||''}"><div class="ret">Return<b>${fmt((stakes.multi||0)*multiOdds())}</b></div></div><div class="quick">${[1,2,5,10].map(v=>`<button data-q="${v}">+$${v}</button>`).join('')}</div>`:''}</div>`;
+    h += `<div class="leg multi"><div class="r1"><div style="flex:1"><div class="sn">${state.slip.length}-Leg Same Game Multi</div><div class="mk">${ok?'All legs must win':g.why}</div></div><span class="od">${ok?(PROMO_SEL.boost?`<s class="was">${fo(g.price)}</s> ${fo(multiOdds())}`:fo(g.price)):'—'}</span></div>
+    ${ok?`<div class="stake"><input type="number" min="0" step="1" placeholder="Stake" data-stake="multi" value="${stakes.multi||''}"><div class="ret">Return${PROMO_SEL.boost?`<s class="was">${fmt((stakes.multi||0)*baseMultiOdds())}</s>`:''}<b>${fmt((stakes.multi||0)*multiOdds())}</b></div></div>${promoBox()}<div class="quick">${[1,2,5,10].map(v=>`<button data-q="${v}">+$${v}</button>`).join('')}</div>`:''}</div>`;
   }
   $('#sbody').innerHTML=h;
   renderFoot();
@@ -475,13 +493,13 @@ function renderFoot(){
   let ret=0;state.slip.forEach(id=>ret+=(+stakes[id]||0)*SEL[id].odds);if(canMulti())ret+=(+stakes.multi||0)*multiOdds();
   if(CONFIRMING && t>0 && t<=state.bal){
     const lines=[];state.slip.forEach(id=>{const st=+stakes[id]||0;if(st>0)lines.push(`${SEL[id].label} — ${fmt(st)} @ ${fo(SEL[id].odds)}`)});
-    if(canMulti()&&(+stakes.multi||0)>0)lines.push(`${state.slip.length}-Leg Same Game Multi — ${fmt(+stakes.multi)} @ ${fo(multiOdds())}`);
+    if(canMulti()&&(+stakes.multi||0)>0)lines.push(`${state.slip.length}-Leg Same Game Multi — ${fmt(+stakes.multi)} @ ${PROMO_SEL.boost?`<s class="was">${fo(baseMultiOdds())}</s> `:''}${fo(multiOdds())}${PROMO_SEL.boost?' ⚡ Boosted':''}${PROMO_SEL.second?' · 🔁 Second Chance':''}`);
     $('#sfoot').innerHTML=`<div class="confirm"><b>Confirm your bet${lines.length>1?'s':''}?</b>${lines.map(l=>`<div class="cl">${l}</div>`).join('')}
-      <div class="tot" style="margin-top:6px"><span>Total stake</span><b>${fmt(t)}</b></div><div class="tot"><span>Potential return</span><b>${fmt(ret)}</b></div></div>
+      <div class="tot" style="margin-top:6px"><span>Total stake</span><b>${fmt(t)}</b></div><div class="tot"><span>Potential return</span><b>${PROMO_SEL.boost&&canMulti()?`<s class="was">${fmt(ret-(+stakes.multi||0)*(multiOdds()-baseMultiOdds()))}</s> `:''}${fmt(ret)}</b></div></div>
       <div style="display:flex;gap:8px"><button class="place alt" id="cancelBtn" style="flex:1">Cancel</button><button class="place" id="confirmBtn" style="flex:2">Confirm Bet ${fmt(t)}</button></div>`;
     return;}
   CONFIRMING=false;
-  $('#sfoot').innerHTML=`<div class="tot"><span>Total stake</span><b>${fmt(t)}</b></div><div class="tot"><span>Potential return</span><b>${fmt(ret)}</b></div><button class="place" id="placeBtn" ${t<=0||t>state.bal?'disabled':''}>${t>state.bal?'Not enough fun bucks':'Place Bet'+(t>0?' '+fmt(t):'')}</button>`;
+  $('#sfoot').innerHTML=`<div class="tot"><span>Total stake</span><b>${fmt(t)}</b></div><div class="tot"><span>Potential return</span><b>${PROMO_SEL.boost&&canMulti()?`<s class="was">${fmt(ret-(+stakes.multi||0)*(multiOdds()-baseMultiOdds()))}</s> `:''}${fmt(ret)}</b></div><button class="place" id="placeBtn" ${t<=0||t>state.bal?'disabled':''}>${t>state.bal?'Not enough fun bucks':'Place Bet'+(t>0?' '+fmt(t):'')}</button>`;
 }
 let CONFIRMING=false;
 function toggle(id){
@@ -495,7 +513,10 @@ function place(){
   const t=totalStake(); if(t<=0||t>state.bal) return;
   const now=new Date().toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
   state.slip.forEach(id=>{const st=+stakes[id]||0;if(st>0)state.bets.push({id:Date.now()+id,round:DATA.round,type:'Single',stake:st,odds:SEL[id].odds,legs:[legOf(id)],status:'open',at:now})});
-  if(canMulti()&&(+stakes.multi||0)>0) state.bets.push({id:Date.now()+'m',round:DATA.round,type:state.slip.length+'-Leg SGM',stake:+stakes.multi,odds:+multiOdds().toFixed(2),legs:state.slip.map(legOf),status:'open',at:now});
+  if(canMulti()&&(+stakes.multi||0)>0){
+    state.bets.push({id:Date.now()+'m',round:DATA.round,type:state.slip.length+'-Leg SGM',stake:+stakes.multi,odds:+multiOdds().toFixed(2),baseOdds:baseMultiOdds(),boost:PROMO_SEL.boost,second:PROMO_SEL.second,legs:state.slip.map(legOf),status:'open',at:now});
+    if(PROMO_SEL.boost)state.promos.boost--; if(PROMO_SEL.second)state.promos.second--;}
+  PROMO_SEL={boost:false,second:false};
   state.bal-=t; state.slip=[]; stakes={}; save(); toast('Bet placed! Good luck 🏀'); closeSlip(); renderAll();
 }
 const legOf=id=>({id,label:SEL[id].label,odds:SEL[id].odds,rule:SEL[id].rule});
@@ -527,20 +548,22 @@ document.addEventListener('click',e=>{
   const mh=e.target.closest('.mh'); if(mh){const card=mh.parentElement;card.classList.toggle('closed');const k=card.dataset.oppk;if(k){card.classList.contains('closed')?COLLAPSED.add(k):COLLAPSED.delete(k)}return}
   const rm=e.target.closest('[data-rm]'); if(rm){state.slip=state.slip.filter(x=>x!==rm.dataset.rm);delete stakes[rm.dataset.rm];renderAll();return}
   const q=e.target.closest('[data-q]'); if(q){stakes.multi=(+stakes.multi||0)+ +q.dataset.q;renderSlip();return}
+  const pm=e.target.closest('[data-promo]'); if(pm){const k=pm.dataset.promo;if(!PROMO_SEL[k]&&(state.promos[k]||0)<=0)return;PROMO_SEL[k]=!PROMO_SEL[k];CONFIRMING=false;renderSlip();return}
   if(e.target.id==='placeBtn'){CONFIRMING=true;renderFoot();return}
   if(e.target.id==='cancelBtn'){CONFIRMING=false;renderFoot();return}
   if(e.target.id==='confirmBtn'){CONFIRMING=false;place();return}
-  if(e.target.id==='clearSlip'){state.slip=[];stakes={};renderAll()}
+  if(e.target.id==='clearSlip'){state.slip=[];stakes={};PROMO_SEL={boost:false,second:false};renderAll()}
   if(e.target.id==='closeSlip')closeSlip();
   if(e.target.closest('#fab'))openSlip();
   if(e.target.id==='clearHist'){if(e.target.dataset.c){HIST=[];saveHist();renderAll();toast('History cleared')}else{e.target.dataset.c=1;e.target.textContent='Tap again to clear'}}
-  if(e.target.id==='resetBtn'){if(e.target.dataset.c){state={bal:DATA.start_balance,slip:[],bets:[],tab:'popular',round:DATA.round};stakes={};save();renderAll();toast('Fresh '+fmt(DATA.start_balance)+' loaded');delete e.target.dataset.c;e.target.textContent='Reset'}else{e.target.dataset.c=1;e.target.textContent='Tap again to reset';setTimeout(()=>{if(e.target.dataset.c){delete e.target.dataset.c;e.target.textContent='Reset'}},3000)}}
+  if(e.target.id==='resetBtn'){if(e.target.dataset.c){state={bal:DATA.start_balance,slip:[],bets:[],tab:'popular',round:DATA.round,promos:{...PROMO_START}};stakes={};save();renderAll();toast('Fresh '+fmt(DATA.start_balance)+' loaded');delete e.target.dataset.c;e.target.textContent='Reset'}else{e.target.dataset.c=1;e.target.textContent='Tap again to reset';setTimeout(()=>{if(e.target.dataset.c){delete e.target.dataset.c;e.target.textContent='Reset'}},3000)}}
 });
 document.addEventListener('input',e=>{
   const k=e.target.dataset.stake; if(!k)return;
   stakes[k]=e.target.value; CONFIRMING=false;
   const s=k==='multi'?multiOdds():SEL[k].odds;
   e.target.parentElement.querySelector('.ret b').textContent=fmt((+e.target.value||0)*s);
+  const was=e.target.parentElement.querySelector('.ret s.was'); if(was&&k==='multi') was.textContent=fmt((+e.target.value||0)*baseMultiOdds());
   renderFoot();
 });
 loadHist(); load(); renderAll(); if(LOADMSG) setTimeout(()=>toast(LOADMSG),400);
