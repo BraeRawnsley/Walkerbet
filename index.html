@@ -177,14 +177,24 @@ th,td{padding:6px 4px}
 .wrap{max-width:480px;grid-template-columns:1fr;padding:10px 10px 90px}
 
 .ehead{padding:18px 14px 16px}
-.avbox{display:flex;width:100%;align-items:center;gap:10px;margin-top:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;border-radius:12px;padding:9px 11px;text-align:left;font-family:Inter}
+.avbox{display:flex;width:100%;min-height:52px;align-items:center;justify-content:center;margin-top:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;border-radius:12px;padding:9px 11px;font-family:Inter;font-size:17px;font-weight:800;letter-spacing:.2px}
+/* availability section: dark blue like the header, so it's clearly not a betting page */
+.avpanel{background:linear-gradient(160deg,var(--brand) 0%,#3a2a8f 100%);border-radius:12px;padding:10px;color:#fff}
+.avpanel .mkt{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18)}
+.avpanel .mkt:last-child{margin-bottom:0}
+.avpanel .mh h3{color:#fff}.avpanel .mh .info,.avpanel .mh .chev{color:#cfcaf7}
+.avpanel .note,.avpanel .empty,.avpanel .avme{color:#cfcaf7}
+.avpanel .avbt button{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.3);color:#fff}
+.avpanel .avsum{color:#cfcaf7}.avpanel .avsum b{color:#fff}
+.avpanel .avr{border-color:rgba(255,255,255,.14);color:#fff}.avpanel .avr small{color:#cfcaf7}
+.avpanel .avp.none{background:rgba(255,255,255,.14);color:#cfcaf7}
 .avbox.on{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
 .avt2{flex:1;min-width:0}.avt2 b{display:block;font-size:13.5px;font-weight:800}.avt2 small{display:block;font-size:11px;opacity:.8;margin-top:1px}
 .avc{font-size:11px;font-weight:700;white-space:nowrap;opacity:.9}
 .avme{display:flex;gap:8px;align-items:center;margin:0 0 8px;font-size:13px;color:var(--muted)}
 .avme select{flex:1;font-size:16px;padding:8px;border:1px solid var(--line);border-radius:8px;font-family:inherit;background:#fff;color:var(--ink)}
 .avbt{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.avbt button{border:1.5px solid var(--line);background:#fafbfd;color:var(--ink);border-radius:12px;padding:12px 2px;font-size:13px;font-weight:800;font-family:Inter}
+.avbt button{border:1.5px solid var(--line);background:#fafbfd;color:var(--ink);border-radius:12px;padding:12px 2px;font-size:12px;font-weight:800;font-family:Inter;white-space:nowrap}
 .avbt button.av.on{background:#1fbf75;border-color:#1fbf75;color:#fff}
 .avbt button.un.on{background:#e04848;border-color:#e04848;color:#fff}
 .avbt button.co.on{background:#f5c400;border-color:#f5c400;color:#1b1446}
@@ -297,10 +307,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="373bf3b0e3">
+<meta name="wb-version" content="cb14b699e5">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='373bf3b0e3',busy=false;
+(function(){var mine='cb14b699e5',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -659,10 +669,7 @@ function avSet(pick){ if(!AV_ME||AV.busy||!AV_URL) return; AV.busy=true;
 function avStatus(n){const r=(AV.rows||[]).find(x=>x.name===n);return r&&r.status?r.status:'none'}
 function avCounts(){const c={available:0,unavailable:0,coaching:0,none:0}; AV_NAMES.forEach(n=>c[avStatus(n)]++); return c}
 function avPaint(){const el=document.getElementById('avbox'); if(!el) return;   // slim entry on the homepage
-  const c=avCounts(), mine=AV_ME?avStatus(AV_ME):'none';
-  const sub=!AV_URL?'Coming soon':!AV.rows?(AV.err?'Tap to open':'Loading…'):
-    (AV_ME?(mine==='none'?'You haven’t answered yet':'You: '+AV_LBL[mine])+' · ':'')+`${c.available} available`;
-  el.innerHTML=`<div class="avt2"><b>My Availability</b><small>Let the team know if you’re playing Round ${DATA.header.round}</small></div><span class="avc">${sub} ›</span>`;
+  el.innerHTML='Availability and Team List';
   el.classList.toggle('on',state.tab==='avail');
   if(state.tab==='avail'){const m=document.getElementById('markets'); if(m) m.innerHTML=availTab();}}
 function availTab(){
@@ -679,7 +686,7 @@ function availTab(){
     `<div class="avsum"><span>✅ <b>${c.available}</b> available</span><span>❌ <b>${c.unavailable}</b> unavailable</span><span><b>${c.coaching}</b> coaching</span><span>⏳ <b>${c.none}</b> not answered</span></div>
      <div class="avl">${list.map(n=>{const s=avStatus(n);return `<div class="avr"><span>${n}${n===AV_ME?'<small>(you)</small>':''}</span><span class="avp ${s}">${AV_LBL[s]}</span></div>`}).join('')}</div>
      <div class="note" style="padding:8px 0 0">New answers can take a few minutes to show on everyone’s phone.</div>`;
-  return mkt('My Availability','',form)+mkt('Team list','Available first',team);}
+  return `<div class="avpanel">${mkt('My Availability','',form)+mkt('Team List','Available first',team)}</div>`;}
 /* ---------- League Ladder & Fixture (info only, not betting) ---------- */
 const LG=DATA.league;
 const LG_ST=LG?Object.fromEntries(LG.standings.map((s,i)=>[s[0],{pos:i+1,w:s[1],l:s[2],pts:s[5],diff:s[6]}])):{};
