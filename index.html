@@ -164,11 +164,14 @@ th,td{padding:6px 4px}
 .prow{grid-template-columns:1fr;gap:6px}
 .ladder{grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}
 .grid2,.grid3{grid-template-columns:1fr;gap:6px}
-.ladder{grid-template-columns:1fr;gap:5px}
-.lb{max-width:250px;width:100%;display:flex;align-items:center;gap:10px;padding:6px 10px;min-height:32px;text-align:left}
-.lb .t{order:1;flex:1;font-size:12.5px;color:var(--ink);font-weight:500}
-.lb .h{order:2;font-size:10px}
-.lb .o{order:3;font-size:14px}
+.ladder{grid-template-columns:1fr 1fr;gap:6px}
+.lb{width:100%;display:flex;align-items:center;gap:6px;padding:8px 10px;min-height:38px;text-align:left;border:1px solid var(--line);background:#fafbfd;border-radius:8px}
+.lb .t{flex:1;font-size:13px;color:var(--ink);font-weight:700}
+.lb .h{font-size:10px;color:#9aa0b3}
+.lb .o{font-size:14px;font-weight:800;color:var(--brand);min-width:34px;text-align:right}
+.lb.sel{border-color:var(--sel)}
+.more{display:block;width:100%;margin-top:6px;border:0;background:none;color:var(--brand);font-size:12px;font-weight:700;padding:6px 0;text-align:center;border-top:1px dashed var(--line)}
+.prow{padding:10px 0}
 .tog{cursor:pointer;user-select:none;display:block;padding:4px 0}
 .tog .pc{display:inline-block;width:16px;color:var(--muted);transition:transform .2s}
 .tog small{margin-left:16px}
@@ -196,10 +199,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="67fbbc05d5">
+<meta name="wb-version" content="97fc27b043">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='67fbbc05d5',busy=false;
+(function(){var mine='97fc27b043',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -346,7 +349,7 @@ function oppTab(){
   return mkt(`${OS.team} — team averages`,'',kv)+mkt('Top scorers','Season, games played',scorers)+mkt('Top 3-point shooters','',threes)+mkt('Most fouls','',fouls)+mkt('Results & scores','Most recent first',res);
 }
 /* ---------- render ---------- */
-const TABS=[['popular','Popular'],['lines','Game Lines'],['pts','Points'],['3pm','Threes'],['pf','Fouls'],['ou','Over/Under'],['top','Top Scorer'],['opp','Oppo Stats'],['form','Form'],['mybets','My Bets'],['results','Results']];
+const TABS=[['popular','Popular'],['lines','Markets'],['pts','Points'],['3pm','Threes'],['pf','Fouls'],['ou','Over/Under'],['top','Top Scorer'],['opp','Oppo Stats'],['form','Form'],['mybets','My Bets'],['results','Results']];
 function renderTabs(){
   const open = state.bets.filter(b=>b.status==='open').length;
   $('#tabs').innerHTML = TABS.map(([k,l])=>`<button data-tab="${k}" class="${state.tab===k?'on':''}">${l}${k==='mybets'&&open?`<span class="badge">${open}</span>`:''}</button>`).join('');
@@ -354,13 +357,20 @@ function renderTabs(){
 const isSel = id=>state.slip.includes(id);
 function obtn(s){return `<button class="ob ${isSel(s.id)?'sel':''}" data-sel="${s.id}"><span class="l">${s.btn||s.label}</span><span class="o">${fo(s.odds)}</span></button>`}
 function mkt(title,info,body,closed){return `<div class="mkt ${closed?'closed':''}"><div class="mh"><h3>${title}</h3><span class="info">${info||''}</span><span class="chev">▾</span></div><div class="mb">${body}</div></div>`}
-const COLLAPSED=new Set();
+const COLLAPSED=new Set(), EXPANDED=new Set();
 function ladderMarket(stat,title,maxOdds,players,only){
   const rows = PS[stat].filter(r=>!players||players.includes(r.p.name)).map(({p,sels})=>{
     const avg = stat==='pts'?p.avg.pts+' ppg':stat==='3pm'?p.avg['3pm']+' 3PM/g':p.avg.pf+' PF/g';
-    const btns = sels.filter(s=>s.odds<=maxOdds && (!only||only.includes(s.line))).map(s=>`<button class="lb ${isSel(s.id)?'sel':''}" data-sel="${s.id}"><div class="t">${s.line}</div><div class="o">${fo(s.odds)}</div><div class="h">${s.hit}</div></button>`).join('');
-    const ck=stat+'-'+pkey(p.name), cl=COLLAPSED.has(ck);
-    return `<div class="prow ${cl?'closed':''}"><div class="pname tog" data-pr="${ck}"><span class="pc">▾</span>${p.name}<small>${avg} · ${p.gp} games</small></div><div class="ladder">${btns||'<span class="note">No market</span>'}</div></div>`;
+    const all = sels.filter(s=>s.odds<=maxOdds && (!only||only.includes(s.line)));
+    const ck=stat+'-'+pkey(p.name)+(only?'-pop':''), cl=COLLAPSED.has(ck), ex=EXPANDED.has(ck);
+    let shown=all;
+    if(all.length>4 && !ex){ // show the 4 options around even money; keep any picked option visible too
+      let best=0; all.forEach((s,i)=>{if(Math.abs(s.odds-1.9)<Math.abs(all[best].odds-1.9))best=i});
+      const start=Math.max(0,Math.min(best-1,all.length-4)); shown=all.slice(start,start+4);
+      all.forEach(s=>{if(isSel(s.id)&&!shown.includes(s))shown=[...shown,s]});}
+    const btn=s=>`<button class="lb ${isSel(s.id)?'sel':''}" data-sel="${s.id}"><span class="t">${s.line}</span><span class="h">${s.hit}</span><span class="o">${fo(s.odds)}</span></button>`;
+    const more=all.length>4?`<button class="more" data-more="${ck}">${ex?'Show fewer ▴':`Show all ${all.length} options ▾`}</button>`:'';
+    return `<div class="prow ${cl?'closed':''}"><div class="pname tog" data-pr="${ck}"><span class="pc">▾</span>${p.name}<small>${avg} · ${p.gp} games</small></div><div class="ladder">${shown.map(btn).join('')||'<span class="note">No market</span>'}</div>${cl?'':more}</div>`;
   }).join('');
   return mkt(title,`<span class="all" data-all="${stat}">Collapse/expand all</span>`,rows);
 }
@@ -558,7 +568,8 @@ document.addEventListener('click',e=>{
   const sel=e.target.closest('[data-sel]'); if(sel){toggle(sel.dataset.sel);return}
   const tab=e.target.closest('[data-tab]'); if(tab){state.tab=tab.dataset.tab;renderAll();return}
   const all=e.target.closest('[data-all]'); if(all){const st=all.dataset.all,keys=PLAYERS.map(p=>st+'-'+pkey(p.name)),anyOpen=keys.some(k=>!COLLAPSED.has(k));keys.forEach(k=>anyOpen?COLLAPSED.add(k):COLLAPSED.delete(k));renderMarkets();return}
-  const pr=e.target.closest('[data-pr]'); if(pr){const k=pr.dataset.pr;COLLAPSED.has(k)?COLLAPSED.delete(k):COLLAPSED.add(k);pr.parentElement.classList.toggle('closed');return}
+  const mo=e.target.closest('[data-more]'); if(mo){const k=mo.dataset.more;EXPANDED.has(k)?EXPANDED.delete(k):EXPANDED.add(k);renderMarkets();return}
+  const pr=e.target.closest('[data-pr]'); if(pr){const k=pr.dataset.pr;COLLAPSED.has(k)?COLLAPSED.delete(k):COLLAPSED.add(k);renderMarkets();return}
   const mh=e.target.closest('.mh'); if(mh){const card=mh.parentElement;card.classList.toggle('closed');const k=card.dataset.oppk;if(k){card.classList.contains('closed')?COLLAPSED.add(k):COLLAPSED.delete(k)}return}
   const rm=e.target.closest('[data-rm]'); if(rm){state.slip=state.slip.filter(x=>x!==rm.dataset.rm);delete stakes[rm.dataset.rm];renderAll();return}
   const q=e.target.closest('[data-q]'); if(q){stakes.multi=(+stakes.multi||0)+ +q.dataset.q;renderSlip();return}
