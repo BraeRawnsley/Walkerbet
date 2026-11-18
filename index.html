@@ -276,7 +276,7 @@ function teamSels(){
   const wl = parseFloat(M.wvtotal[0].label.split(' ')[1]);
   out.wvtotal = M.wvtotal.map((x,i)=>addSel({id:'wvt-'+i,mkt:'wvtotal',mname:'Walkerville Total Points',label:x.label,odds:x.odds,rule:{k:'wvtotal',over:i===0,line:wl}}));
   out.margin = M.margin.map((x,i)=>addSel({id:'mar-'+i,mkt:'margin',mname:'Winning Margin',label:x.label,odds:x.odds,rule:{k:'margin',lo:x.lo,hi:x.hi}}));
-  out.top = DATA.topscorer.map((x,i)=>addSel({id:'top-'+i,mkt:'top',mname:'Walkerville Top Points Scorer',label:x.name,odds:x.odds,rule:{k:'top',p:x.name}}));
+  out.top = DATA.topscorer.map((x,i)=>addSel({id:'top-'+i,mkt:'top',mname:'Walkerville Top Points Scorer',label:'Top Scorer - '+x.name,btn:x.name,odds:x.odds,rule:{k:'top',p:x.name}}));
   return out;
 }
 const T = teamSels();
@@ -320,7 +320,7 @@ function renderTabs(){
   $('#tabs').innerHTML = TABS.map(([k,l])=>`<button data-tab="${k}" class="${state.tab===k?'on':''}">${l}${k==='mybets'&&open?`<span class="badge">${open}</span>`:''}</button>`).join('');
 }
 const isSel = id=>state.slip.includes(id);
-function obtn(s){return `<button class="ob ${isSel(s.id)?'sel':''}" data-sel="${s.id}"><span class="l">${s.label}</span><span class="o">${fo(s.odds)}</span></button>`}
+function obtn(s){return `<button class="ob ${isSel(s.id)?'sel':''}" data-sel="${s.id}"><span class="l">${s.btn||s.label}</span><span class="o">${fo(s.odds)}</span></button>`}
 function mkt(title,info,body,closed){return `<div class="mkt ${closed?'closed':''}"><div class="mh"><h3>${title}</h3><span class="info">${info||''}</span><span class="chev">▾</span></div><div class="mb">${body}</div></div>`}
 const COLLAPSED=new Set();
 function ladderMarket(stat,title,maxOdds,players,only){
