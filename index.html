@@ -307,10 +307,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="07f4a67673">
+<meta name="wb-version" content="101517d1c3">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='07f4a67673',busy=false;
+(function(){var mine='101517d1c3',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -386,11 +386,17 @@ function loadHist(){try{HIST=JSON.parse(localStorage.getItem('walkerbet_history'
 function saveHist(){try{localStorage.setItem('walkerbet_history',JSON.stringify(HIST))}catch(e){}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify({round:state.round,bal:state.bal,bets:state.bets,promos:state.promos,start:DATA.start_balance,reset:DATA.reset_id||'',voided:DATA.void_id||''}))}catch(e){}}
 function archive(b){if(b.status!=='open'&&!HIST.some(h=>h.id===b.id))HIST.push(JSON.parse(JSON.stringify(b)))}
+function legDNP(rule,R){ // player legs only: the player isn't on the box score → didn't play
+  return !!rule.p && ['pts','3pm','pf','ou','top'].includes(rule.k) && !(R.p&&R.p[rule.p]);}
 function autoSettle(){ // settles open bets against results published into the page after each game
   let n=0,won=0;
   state.bets.filter(b=>b.status==='open').forEach(b=>{const R=DATA.finals[b.round]; if(!R) return;
     if(R.fft){b.status='void';state.bal+=b.stake;n++;return}
-    b.legRes={};let lost=false,misses=0;b.legs.forEach(l=>{const r=judge(l.rule,R);b.legRes[l.id]=r;if(r===false){lost=true;misses++}});
+    b.legRes={};let lost=false,misses=0,voids=0;
+    b.legs.forEach(l=>{const r=legDNP(l.rule,R)?'void':judge(l.rule,R);b.legRes[l.id]=r;if(r==='void')voids++;else if(r===false){lost=true;misses++}});
+    // a player in the bet didn't play: that leg is void. Single / all-void → stake back. Multi → price cut 25% (min 1.00).
+    if(voids===b.legs.length){b.status='void';b.voidNote='did not play';state.bal+=b.stake;n++;return}
+    if(voids){b.voidLeg=true;b.origOdds=b.odds;b.odds=Math.max(1,Math.round(b.odds*0.75*100)/100)}
     if(lost&&b.second&&misses===1){b.scRefund=Math.round(b.stake*25)/100;state.bal+=b.scRefund;won+=b.scRefund}
     if(lost)b.status='lost';else{b.status='won';state.bal+=b.stake*b.odds;won+=b.stake*b.odds} n++;});
   state.bets.forEach(archive); saveHist(); return {n,won};}
@@ -613,13 +619,13 @@ function form(){
 function mybets(){
   const list = state.bets.slice().reverse().map(b=>{
     const pill = b.status==='open'?'<span class="pill po">OPEN</span>':b.status==='won'?'<span class="pill pw">WON '+fmt(b.stake*b.odds)+'</span>':b.status==='void'?`<span class="pill po">VOID${b.voidNote?' ('+b.voidNote.toUpperCase()+')':''}</span>`:b.scRefund?'<span class="pill psc">🔁 SECOND CHANCE +'+fmt(b.scRefund)+'</span>':'<span class="pill pl">LOST</span>';
-    return `<div class="bet">${bigWin(b)?`<button class="bwshare" data-share="${b.id}">🎉 Big win! Share it with the boys</button>`:`<button class="sharesm" data-share="${b.id}">📤 Share bet</button>`}<div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span>${pill}</div>${b.scRefund?`<div class="note sc">Lost by one leg — ${fmt(b.scRefund)} (25% of stake) paid back by Second Chance</div>`:''}${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}<div class="top2" style="margin:6px 0 0"><span>Potential return</span><b style="color:var(--ink)">${fmt(b.stake*b.odds)}</b></div></div>`;
+    return `<div class="bet">${bigWin(b)?`<button class="bwshare" data-share="${b.id}">🎉 Big win! Share it with the boys</button>`:`<button class="sharesm" data-share="${b.id}">📤 Share bet</button>`}<div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.voidLeg?`<s class="was">${fo(b.origOdds)}</s> `:b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span>${pill}</div>${b.scRefund?`<div class="note sc">Lost by one leg — ${fmt(b.scRefund)} (25% of stake) paid back by Second Chance</div>`:''}${b.voidLeg?`<div class="note">A player in this multi didn\u2019t play — that leg is void and the multi price dropped 25%.</div>`:''}${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':r==='void'?'⚪ ':''}${l.label}${r==='void'?' <small style="color:var(--muted)">(void — didn\u2019t play)</small>':''}</span><b>${fo(l.odds)}</b></div>`}).join('')}<div class="top2" style="margin:6px 0 0"><span>Potential return</span><b style="color:var(--ink)">${fmt(b.stake*b.odds)}</b></div></div>`;
   }).join('') || '<div class="empty">No bets placed yet.</div>';
   return mkt('My Bets',DATA.round,list)+`<div class="note">Bets settle automatically — results are added after each game (Thursday ~11:30pm). Open WalkerBet after that and your winnings land; settled bets move to Results.</div>`;
 }
 function betCard(b){
   const pill = b.status==='open'?'<span class="pill po">OPEN</span>':b.status==='won'?'<span class="pill pw">WON '+fmt(b.stake*b.odds)+'</span>':b.status==='void'?`<span class="pill po">VOID${b.voidNote?' ('+b.voidNote.toUpperCase()+')':''}</span>`:b.scRefund?'<span class="pill psc">🔁 SECOND CHANCE +'+fmt(b.scRefund)+'</span>':'<span class="pill pl">LOST</span>';
-  return `<div class="bet">${bigWin(b)?`<button class="bwshare" data-share="${b.id}">🎉 Big win! Share it with the boys</button>`:`<button class="sharesm" data-share="${b.id}">📤 Share bet</button>`}<div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span>${pill}</div>${b.scRefund?`<div class="note sc">Lost by one leg — ${fmt(b.scRefund)} (25% of stake) paid back by Second Chance</div>`:''}${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}</div>`;}
+  return `<div class="bet">${bigWin(b)?`<button class="bwshare" data-share="${b.id}">🎉 Big win! Share it with the boys</button>`:`<button class="sharesm" data-share="${b.id}">📤 Share bet</button>`}<div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.voidLeg?`<s class="was">${fo(b.origOdds)}</s> `:b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span>${pill}</div>${b.scRefund?`<div class="note sc">Lost by one leg — ${fmt(b.scRefund)} (25% of stake) paid back by Second Chance</div>`:''}${b.voidLeg?`<div class="note">A player in this multi didn\u2019t play — that leg is void and the multi price dropped 25%.</div>`:''}${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':r==='void'?'⚪ ':''}${l.label}${r==='void'?' <small style="color:var(--muted)">(void — didn\u2019t play)</small>':''}</span><b>${fo(l.odds)}</b></div>`}).join('')}</div>`;}
 function resultsTab(){
   if(!HIST.length) return mkt('Results','','<div class="empty">No settled bets yet. Bets land here once the result is added (Thursday ~11:30pm) and stay here week to week.</div>');
   const R=HIST.filter(b=>b.status!=='void');                       // voided bets don't count toward the record
@@ -632,8 +638,9 @@ function resultsTab(){
   const rounds=[...new Set(HIST.map(b=>b.round))].reverse();
   const card=b=>{const pill=b.status==='won'?`<span class="pill pw big">WON ${fmt(b.stake*b.odds)}</span>`:b.status==='void'?`<span class="pill po">VOID${b.voidNote?' ('+b.voidNote.toUpperCase()+')':''}</span>`:b.scRefund?`<span class="pill psc big">🔁 SECOND CHANCE +${fmt(b.scRefund)}</span>`:'<span class="pill pl">LOST</span>';
     return `<div class="bet rbet">${bigWin(b)?`<button class="bwshare" data-share="${b.id}">🎉 Big win! Share it with the boys</button>`:`<button class="sharesm" data-share="${b.id}">📤 Share bet</button>`}
-      <div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span></div>
-      ${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':''}${l.label}</span><b>${fo(l.odds)}</b></div>`}).join('')}
+      <div class="top2"><span>${b.type} · ${fmt(b.stake)} @ ${b.voidLeg?`<s class="was">${fo(b.origOdds)}</s> `:b.boost?`<s class="was">${fo(b.baseOdds)}</s> `:''}${fo(b.odds)}${b.boost?' ⚡':''}${b.second?' 🔁':''}</span></div>
+      ${b.legs.map(l=>{const r=b.legRes?b.legRes[l.id]:null;return `<div class="lg"><span>${r===true?'✅ ':r===false?'❌ ':r==='void'?'⚪ ':''}${l.label}${r==='void'?' <small style="color:var(--muted)">(void — didn\u2019t play)</small>':''}</span><b>${fo(l.odds)}</b></div>`}).join('')}
+      ${b.voidLeg?`<div class="note" style="padding:4px 0 0">A player in this multi didn\u2019t play — that leg is void and the multi price dropped 25%.</div>`:''}
       <div class="rfoot">${pill}${b.status==='void'?'':(n=>n>=0?`<span class="rmoney">+${fmt(n)}</span>`:`<span class="rmoney neg">−${fmt(-n)}</span>`)(back(b)-b.stake)}</div></div>`;};
   const list=rounds.map(r=>{const bs=HIST.filter(b=>b.round===r), p=bs.filter(b=>b.status!=='void').reduce((a,b)=>a+back(b)-b.stake,0);
     return `<div class="rhead"><span>${r}</span><span style="color:${p>=0?'var(--win)':'var(--loss)'}">${p>=0?'+':'−'}${fmt(Math.abs(p))}</span></div>`+bs.slice().reverse().map(card).join('')}).join('');
@@ -900,7 +907,7 @@ function openSlip(){$('#slip').classList.add('open')} function closeSlip(){$('#s
 function prompt0(txt){const box=document.createElement('div');box.className='sharebox';box.innerHTML=`<b>Copy this and send it to the boys:</b><textarea readonly>${txt}</textarea><button class="place">Done</button>`;document.body.appendChild(box);const ta=box.querySelector('textarea');ta.focus();ta.select();box.querySelector('button').onclick=()=>box.remove();}
 function bigWin(b){return b.status==='won'&&((b.legs.length>1&&b.odds>=3.5)||b.stake*b.odds>=100)}
 function shareText(b){const head=bigWin(b)?'🏆 WalkerBet Big Winner':b.status==='won'?'✅ WalkerBet winner':b.status==='open'?'🏀 My WalkerBet bet':b.status==='void'?'WalkerBet bet (void)':'❌ WalkerBet bet';
-  const mark=l=>b.legRes&&b.legRes[l.id]===true?'✅':b.legRes&&b.legRes[l.id]===false?'❌':'•';
+  const mark=l=>b.legRes&&b.legRes[l.id]===true?'✅':b.legRes&&b.legRes[l.id]===false?'❌':b.legRes&&b.legRes[l.id]==='void'?'⚪ (void)':'•';
   const tail=b.status==='won'?`Returned ${fmt(b.stake*b.odds)}`:b.status==='open'?'Good luck to me 🤞':b.scRefund?`Second Chance saved ${fmt(b.scRefund)}`:'';
   return `${head} (${b.round})\n`+b.legs.map(l=>`${mark(l)} ${l.label} @ ${fo(l.odds)}`).join('\n')+`\n${b.legs.length>1?b.legs.length+'-Leg Multi':'Single'} @ ${fo(b.odds)}${tail?' → '+tail:''}`}
 function renderAll(){$('#bal').textContent=fmt(state.bal);renderTabs();renderMarkets();renderSlip()}
