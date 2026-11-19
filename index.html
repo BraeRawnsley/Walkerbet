@@ -310,10 +310,10 @@ main{min-width:0}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="ccf1d54962">
+<meta name="wb-version" content="11206b9591">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='ccf1d54962',busy=false;
+(function(){var mine='11206b9591',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -531,13 +531,13 @@ function legPool(){
 function last5(x){const g=x.p.log.filter(Boolean).slice(-5).map(v=>v[STI[x.st]]);
   const hit=g.filter(v=>x.kind==='ladder'?v>=x.line:(x.over?v>x.line:v<x.line)).length; return {g,hit,n:g.length};}
 function legRow(x,sub){const s=x.s;return `<div class="pick"><div class="pk"><div class="pl1">${s.label}</div><div class="pl2">${sub}</div></div><button class="ob pob ${isSel(s.id)?'sel':''}" data-sel="${s.id}"><span class="o">${fo(s.odds)}</span></button></div>`}
-function hotTab(){
+function hotTab(){ // last 5 games only (Brae, 19 Nov 2026)
   const best={};
-  legPool().filter(x=>x.h/x.n>=0.6 && x.s.odds>=1.05).forEach(x=>{ // per player/stat/side keep the hardest line at each hit rate
-    const key=x.p.name+x.st+x.kind+x.over+(x.h/x.n).toFixed(3); if(!best[key]||x.line>best[key].line) best[key]=x;});
-  const list=Object.values(best).sort((a,b)=>b.h/b.n-a.h/a.n||b.s.odds-a.s.odds).slice(0,25);
-  const rows=list.map(x=>{const pct=Math.round(x.h/x.n*100);return legRow(x,`<span class="hit ${pct===100?'h100':''}">${pct}%</span> Hit in ${x.h} of ${x.n} games`)}).join('');
-  return mkt('🔥 Hot Legs','Hit 60%+ of games since R12',`<div class="note" style="padding-top:0">Legs that keep landing — 100% hitters at the top.</div>${rows||'<div class="empty">No hot legs this week.</div>'}`);}
+  legPool().filter(x=>x.s.odds>=1.05).map(x=>Object.assign(x,{l5:last5(x)})).filter(x=>x.l5.n>0&&x.l5.hit/x.l5.n>=0.6).forEach(x=>{
+    const key=x.p.name+x.st+x.kind+x.over+(x.l5.hit/x.l5.n).toFixed(3); if(!best[key]||x.line>best[key].line) best[key]=x;}); // hardest line at each hit rate
+  const list=Object.values(best).sort((a,b)=>b.l5.hit/b.l5.n-a.l5.hit/a.l5.n||b.s.odds-a.s.odds).slice(0,25);
+  const rows=list.map(x=>{const pct=Math.round(x.l5.hit/x.l5.n*100);return legRow(x,`<span class="hit ${pct===100?'h100':''}">${pct}%</span> Hit in ${x.l5.hit} of his last ${x.l5.n} (${x.l5.g.join(', ')})`)}).join('');
+  return mkt('🔥 Hot Legs','Hit 60%+ of the last 5 games',`<div class="note" style="padding-top:0">Legs that keep landing lately — 100% hitters at the top.</div>${rows||'<div class="empty">No hot legs this week.</div>'}`);}
 function valueTab(){
   const list=legPool().filter(x=>x.s.odds>=1.80).map(x=>Object.assign(x,{l5:last5(x)})).filter(x=>x.l5.n>0&&x.l5.hit>0)
     .sort((a,b)=>b.l5.hit/b.l5.n-a.l5.hit/a.l5.n||b.s.odds-a.s.odds).slice(0,25);
