@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>WalkerBet — Packing Heat v Walkerville (R20)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,900&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#eef0f5; --card:#fff; --ink:#151a2d; --muted:#6b7286; --line:#e2e5ee;
@@ -13,11 +13,11 @@
   --odds:#f3f5fa; --oddsHover:#e6e9f3; --sel:#1b1446; --win:#139a5b; --loss:#d23c3c;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+body{margin:0;overflow-x:hidden;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
 button{font-family:inherit;cursor:pointer}
 .top{background:var(--brand);color:#fff;position:sticky;top:0;z-index:30}
 .topin{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:10px 16px}
-.logo{font-family:'Barlow Condensed';font-weight:800;font-size:28px;letter-spacing:.5px;font-style:italic}
+.logo{font-family:Inter;font-weight:900;font-size:28px;letter-spacing:-.5px;font-style:italic}
 .logo span{color:var(--acc)}
 .tag{font-size:11px;background:rgba(255,255,255,.12);padding:3px 8px;border-radius:20px;color:#d9d6ff}
 .sp{flex:1}
@@ -36,16 +36,16 @@ button{font-family:inherit;cursor:pointer}
 .emeta{font-size:12px;color:#cfcaf7;display:flex;gap:10px;flex-wrap:wrap}
 .live{background:var(--acc);color:var(--accInk);font-weight:700;padding:1px 7px;border-radius:4px;font-size:11px}
 .teams{display:flex;align-items:center;gap:14px;margin:12px 0 4px}
-.team{font-family:'Barlow Condensed';font-weight:700;font-size:26px;line-height:1}
+.team{font-family:Inter;font-weight:700;font-size:26px;line-height:1}
 .team small{display:block;font-family:Inter;font-size:11px;font-weight:500;color:#cfcaf7;margin-top:4px}
 .vs{font-size:12px;color:#a9a3e0;font-weight:600}
 .tabs{display:flex;flex-direction:column;gap:6px;padding:10px;border-bottom:1px solid var(--line);background:#fff}
 .trow{display:flex;flex-wrap:wrap;gap:6px}
 .trow.mine-row{flex-wrap:nowrap;gap:5px;}
-.trow.mine-row button{padding:6px 8px;font-size:11px;white-space:nowrap}
+.trow.mine-row button{flex:1 1 0;min-width:0;padding:7px 4px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .trow.mine-row{padding-bottom:6px;border-bottom:1px dashed var(--line)}
-.tabs button.mine{background:#fff3c4;color:#5a4300;border:1px solid #f0d77a}
-.tabs button.mine.on{background:#f5c400;color:#1b1446;border-color:#f5c400}
+.tabs button.mine{background:#eceafd;color:var(--brand);border:1px solid #d6d2f7}
+.tabs button.mine.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 .tabs button{border:0;background:var(--odds);padding:7px 11px;border-radius:16px;font-weight:600;font-size:12px;color:var(--ink);white-space:nowrap}
 .tabs button.on{background:var(--brand);color:#fff}
 .tabs .badge{background:var(--acc);color:var(--accInk)}
@@ -99,7 +99,7 @@ button{font-family:inherit;cursor:pointer}
 .stake .ret{font-size:11px;color:var(--muted);margin-left:auto;text-align:right}
 .stake .ret b{display:block;color:var(--ink);font-size:13px}
 .multi{background:#f7f6ff;border-top:2px solid var(--brand)}
-.multi .sn{font-family:'Barlow Condensed';font-size:18px}
+.multi .sn{font-family:Inter;font-size:18px}
 .sfoot{padding:12px 14px;border-top:1px solid var(--line)}
 .tot{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
 .tot b{color:var(--ink)}
@@ -138,7 +138,7 @@ th,td{padding:6px 4px}
 .pcard .gl b{color:var(--ink)}
 .sumgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
 .sumgrid div{background:#fafbfd;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center}
-.sumgrid b{display:block;font-family:'Barlow Condensed';font-size:20px}
+.sumgrid b{display:block;font-family:Inter;font-size:20px}
 .sumgrid small{font-size:10px;color:var(--muted)}
 .sumgrid.sm{grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:2px}
 .sumgrid.sm div{padding:5px 2px;border-radius:6px}
@@ -150,7 +150,7 @@ th,td{padding:6px 4px}
 .rbet .lg b{font-size:13px}
 .rfoot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed #c9cedb}
 .pill.big{font-size:12px;padding:2px 8px}
-.rmoney{font-family:'Barlow Condensed';font-weight:800;font-size:22px;color:var(--win)}
+.rmoney{font-family:Inter;font-weight:800;font-size:22px;color:var(--win)}
 .rmoney.neg{color:var(--loss);font-size:16px}
 .rhead{font-weight:700;font-size:13px;margin:12px 0 6px;display:flex;justify-content:space-between}
 .pill{display:inline-block;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700}
@@ -167,17 +167,19 @@ th,td{padding:6px 4px}
 .foot{font-size:11px;color:var(--muted);padding:14px 4px;line-height:1.5}
 .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:12px}
 .kv div{background:#fafbfd;border:1px solid var(--line);border-radius:8px;padding:10px}
-.kv b{display:block;font-size:20px;font-family:'Barlow Condensed'}
+.kv b{display:block;font-size:20px;font-family:Inter}
 .kv small{color:var(--muted);font-size:11px}
 /* phone-first: narrow column everywhere */
 .topin,.sportnav .in{max-width:480px}
 .topin{padding:10px 12px;gap:10px}
 .logo{font-size:24px}
 .tag{display:none}
-.wrap{max-width:480px;grid-template-columns:1fr;padding:10px 10px 90px}
+.wrap{max-width:480px;grid-template-columns:minmax(0,1fr);padding:10px 10px 90px}
+main{min-width:0}
 
 .ehead{padding:18px 14px 16px}
-.avbox{display:flex;width:100%;min-height:52px;align-items:center;justify-content:center;margin-top:12px;border:1px solid #1fbf75;background:#1fbf75;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.25);border-radius:12px;padding:9px 11px;font-family:Inter;font-size:17px;font-weight:800;letter-spacing:.2px}
+.avwrap{padding:10px 10px 0;background:#fff}
+.avbox{display:flex;width:100%;min-height:52px;align-items:center;justify-content:center;margin:0;border:0;background:#1fbf75;color:#fff;border-radius:12px;padding:9px 11px;font-family:Inter;font-size:17px;font-weight:800;letter-spacing:.2px;box-shadow:0 2px 8px rgba(31,191,117,.35)}
 /* availability section: dark blue like the header, so it's clearly not a betting page */
 .avpanel{background:linear-gradient(160deg,var(--brand) 0%,#3a2a8f 100%);border-radius:12px;padding:10px;color:#fff}
 .avpanel .mkt{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18)}
@@ -230,12 +232,12 @@ th,td{padding:6px 4px}
 .fxm b{color:var(--brand)}
 .fxt{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;padding:1px 0}
 .fxt .nm{font-weight:600}.fxt .nm small{font-weight:500;color:var(--muted);font-size:11px;margin-left:4px}
-.fxt .sc{font-family:'Barlow Condensed';font-weight:800;font-size:17px;min-width:26px;text-align:right}
+.fxt .sc{font-family:Inter;font-weight:800;font-size:17px;min-width:26px;text-align:right}
 .fxt.win .nm{font-weight:800}.fxt.lose .sc{color:var(--muted)}
 .fxn{font-size:11px;color:var(--muted);margin-top:5px;border-top:1px dashed var(--line);padding-top:5px}
 .nextup{background:linear-gradient(120deg,var(--brand),#3a2a8f);color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px}
 .nextup small{color:#cfcaf7;font-size:11px;display:block}
-.nextup .big{font-family:'Barlow Condensed';font-weight:800;font-size:22px;margin:3px 0}
+.nextup .big{font-family:Inter;font-weight:800;font-size:22px;margin:3px 0}
 .nextup .cd{display:inline-block;background:var(--acc);color:var(--accInk);font-weight:800;font-size:11px;border-radius:4px;padding:1px 7px;margin-top:4px}
 
 .team{font-size:22px}
@@ -253,7 +255,7 @@ th,td{padding:6px 4px}
 .prow{padding:10px 0}
 .bw{margin:10px 10px 0;border:1px solid #f0d77a;background:linear-gradient(180deg,#fffbea,#fff);border-radius:10px;padding:10px 12px}
 .bwh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.bwh span{font-family:'Barlow Condensed';font-weight:800;font-size:19px;color:var(--brand);letter-spacing:.3px}
+.bwh span{font-family:Inter;font-weight:800;font-size:19px;color:var(--brand);letter-spacing:.3px}
 .bwh small{font-size:11px;color:var(--muted)}
 .bwc{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:6px}
 .bwt{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:2px}
@@ -270,7 +272,7 @@ th,td{padding:6px 4px}
 .qleg:first-child{border-top:0}
 .qleg b{color:var(--brand)}
 .qfoot{display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:2px solid var(--brand)}
-.qfoot div{flex:1}.qfoot small{display:block;font-size:11px;color:var(--muted)}.qfoot b{font-family:'Barlow Condensed';font-size:24px;color:var(--brand)}
+.qfoot div{flex:1}.qfoot small{display:block;font-size:11px;color:var(--muted)}.qfoot b{font-family:Inter;font-size:24px;color:var(--brand)}
 .qadd{width:auto;margin:0;padding:10px 16px;font-size:14px}
 .pick{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
 .pick:first-of-type{border-top:0}
@@ -287,7 +289,7 @@ th,td{padding:6px 4px}
 .prow.closed .tog .pc{transform:rotate(-90deg)}
 .prow.closed{padding:4px 0}
 .all{color:var(--brand);font-weight:600;text-decoration:underline;cursor:pointer}
-.ob{max-width:250px;width:100%;padding:6px 10px;min-height:34px;gap:12px}
+.ob{max-width:none;width:100%;padding:6px 10px;min-height:34px;gap:12px}
 .ob .l{font-size:12.5px}
 .ob .o{font-size:14px}
 .slip{position:fixed;left:50%;width:100%;max-width:480px;bottom:0;top:auto;border-radius:14px 14px 0 0;transform:translate(-50%,100%);transition:transform .25s;z-index:50;box-shadow:0 -6px 24px rgba(0,0,0,.2);max-height:85vh;display:flex;flex-direction:column}
@@ -307,10 +309,10 @@ th,td{padding:6px 4px}
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <style>.top{padding-top:env(safe-area-inset-top)}.fab{bottom:calc(16px + env(safe-area-inset-bottom))}.slip{padding-bottom:env(safe-area-inset-bottom)}</style>
-<meta name="wb-version" content="101517d1c3">
+<meta name="wb-version" content="83feaf7c95">
 <script>
 /* auto-update: when the app is opened or brought back, check GitHub for a newer version and reload */
-(function(){var mine='101517d1c3',busy=false;
+(function(){var mine='83feaf7c95',busy=false;
 function check(){if(busy)return;busy=true;
  fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){
   var m=t.match(/name="wb-version" content="([^"]+)"/);
@@ -341,7 +343,6 @@ document.addEventListener('visibilitychange',function(){if(document.visibilitySt
         <div class="vs">VS</div>
         <div class="team"><span id="hOpp"></span><small id="hOp"></small></div>
       </div>
-      <button class="avbox" data-tab="avail" id="avbox"></button>
       <div class="emeta" style="margin-top:8px"><span id="hLast"></span></div>
       <div class="hq" id="hq">
         <button data-tab="ladder"><span class="ic">🏆</span>League Ladder</button>
@@ -349,6 +350,7 @@ document.addEventListener('visibilitychange',function(){if(document.visibilitySt
         <a href="https://tmetriks.com/MBC/season/176" target="_blank" rel="noopener"><span class="ic">🌐</span>League Website</a>
       </div>
     </div>
+    <div class="avwrap"><button class="avbox" data-tab="avail" id="avbox"></button></div>
     <div class="tabs" id="tabs"></div>
     <div class="markets" id="markets"></div>
   </section>
@@ -472,7 +474,7 @@ function oppTab(){
   return mkt(`${OS.team} — team averages`,'',kv)+mkt('Top scorers','Season, games played',scorers)+mkt('Top 3-point shooters','',threes)+mkt('Most fouls','',fouls)+mkt('Results & scores','Most recent first',res);
 }
 /* ---------- render ---------- */
-const TABS=[['popular','Popular'],['hot','🔥 Hot Legs'],['value','💎 Value Picks'],['quick','⚡ Quick Bets'],['lines','Match'],['pts','Points'],['3pm','Threes'],['pf','Fouls'],['ou','Over/Under'],['top','Top Scorer'],['opp','📋 Oppo stats'],['form','📊 Walky stats'],['mybets','🧾 My Bets'],['results','🏆 Results']];
+const TABS=[['popular','Popular'],['hot','🔥 Hot Legs'],['value','💎 Value Picks'],['quick','⚡ Quick Bets'],['lines','Match'],['pts','Points'],['3pm','Threes'],['pf','Fouls'],['ou','Over/Under'],['top','Top Scorer'],['opp','Oppo stats'],['form','Walky stats'],['mybets','My Bets'],['results','Results']];
 function renderTabs(){
   const open = state.bets.filter(b=>b.status==='open').length;
   const L=Object.fromEntries(TABS), b=(k,cls='')=>`<button data-tab="${k}" class="${cls} ${state.tab===k?'on':''}">${L[k]}${k==='mybets'&&open?`<span class="badge">${open}</span>`:''}</button>`;
@@ -500,7 +502,7 @@ function ladderMarket(stat,title,maxOdds,players,only){
   return mkt(title,`<span class="all" data-all="${stat}">Collapse/expand all</span>`,rows);
 }
 function ouMarket(st,players){
-  const rows=OU[st].filter(r=>!players||players.includes(r.p.name)).map(({p,o,over,under})=>`<div class="prow"><div class="pname">${p.name}<small>Avg ${p.avg[st]} · line ${o.line}</small></div><div class="grid2">
+  const rows=OU[st].filter(r=>!players||players.includes(r.p.name)).slice().sort((a,b)=>b.o.line-a.o.line||b.p.avg[st]-a.p.avg[st]).map(({p,o,over,under})=>`<div class="prow"><div class="pname">${p.name}<small>Avg ${p.avg[st]} · line ${o.line}</small></div><div class="grid2">
     <button class="ob ${isSel(over.id)?'sel':''}" data-sel="${over.id}"><span class="l">Over ${o.line}<br><span class="h" style="font-size:10px;color:#9aa0b3">${o.ho} games</span></span><span class="o">${fo(over.odds)}</span></button>
     <button class="ob ${isSel(under.id)?'sel':''}" data-sel="${under.id}"><span class="l">Under ${o.line}<br><span class="h" style="font-size:10px;color:#9aa0b3">${o.hu} games</span></span><span class="o">${fo(under.odds)}</span></button></div></div>`).join('');
   return mkt(`Player ${STATN[st][0]} — Over/Under`,st==='pts'?'Main lines':'Line set at each player\'s average',rows);
